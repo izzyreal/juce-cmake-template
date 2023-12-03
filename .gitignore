@@ -1,0 +1,48 @@
+# Directory where dependencies are downloaded by CMake,
+# for example via FetchContent or CPM. This is my own
+# convention, and is configured in CMakeLists.txt in
+# FetchContent_Declare calls via the SOURCE_DIR
+# property.
+
+deps/
+
+# Build dir for CMake. Name is chosen by
+# convention and could in principle be anything.
+#
+# It is created when running for example
+# `cmake -B build .` in the root of this repo.
+#
+# This covers all build tool cases where the
+# `cmake` command is run manually by the
+# developer.
+#
+# Over its lifetime, this dir will contain most
+# if not all build artifacts, from CMake cache
+# to IDE project files and compiled binaries.
+
+build/
+
+########
+
+# CLion configuration dir. We explicitly do not
+# version this dir, as in my opinion it is a
+# complete anti-pattern and reliance on it leads
+# to vendor lock-in.
+#
+# Note that I personally love to work with CLion,
+# but we live in a big and diverse world. Also,
+# there is no free version of CLion.
+#
+# Also note that one of the main motivations for
+# using CMake in the first place is to keep a
+# project portable; to other machines, and to
+# other build tools and IDEs.
+
+.idea/
+
+########
+
+# Default CLion build dirs
+
+cmake-build-debug/
+cmake-build-release/
