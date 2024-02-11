@@ -6,7 +6,7 @@ project(plugin VERSION 0.0.1)
 
 FetchContent_Declare(JUCE
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-  GIT_TAG        7.0.5
+  GIT_TAG        7.0.9
   SOURCE_DIR     ${CMAKE_SOURCE_DIR}/deps/JUCE
 )
 
