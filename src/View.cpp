@@ -20,6 +20,13 @@ static void from_json(const json& j, node& n)
     if (j.contains("direction")) j.at("direction").get_to(n.direction);
     if (j.contains("max_height")) j.at("max_height").get_to(n.max_height); else n.max_height = 0.f;
 
+    if (j.contains("include"))
+    {
+        std::ifstream jsonFile("/Users/izmar/projects/VMPC2000XL/vector UI/views/" + j.at("include").get<std::string>() + ".json");
+        json data = json::parse(jsonFile);
+        n = data.template get<node>();
+    }
+
     printf("=== Deserialized node ===\n");
     if (!n.name.empty())     printf("-     name: %s\n", n.name.c_str());
     if (!n.svg.empty())      printf("-      svg: %s\n", n.svg.c_str());
