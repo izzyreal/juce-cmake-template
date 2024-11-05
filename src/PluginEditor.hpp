@@ -2,6 +2,7 @@
 
 #include "juce_audio_processors/juce_audio_processors.h"
 #include "PluginProcessor.hpp"
+#include "View.hpp"
 
 class PluginEditor : public juce::AudioProcessorEditor
 {
@@ -12,4 +13,5 @@ public:
 
 private:
     PluginProcessor &pluginProcessor;
+    View view;
 };

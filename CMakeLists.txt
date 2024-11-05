@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(FetchContent)
 
 project(plugin VERSION 0.0.1)
@@ -10,10 +10,17 @@ FetchContent_Declare(JUCE
   SOURCE_DIR     ${CMAKE_SOURCE_DIR}/deps/JUCE
 )
 
+FetchContent_Declare(json
+  GIT_REPOSITORY https://github.com/nlohmann/json.git
+  GIT_TAG        v3.11.3
+  GIT_SHALLOW    ON
+  SOURCE_DIR     ${CMAKE_SOURCE_DIR}/deps/json
+)
+
 set (JUCE_COPY_PLUGIN_AFTER_BUILD ON)
 set (JUCE_ENABLE_MODULE_SOURCE_GROUPS ON)
 
-FetchContent_MakeAvailable(JUCE)
+FetchContent_MakeAvailable(JUCE json)
 
 juce_add_plugin(plugin
     BUNDLE_ID org.example.plugin
@@ -46,7 +53,18 @@ target_compile_definitions(plugin PUBLIC
     JUCE_DISPLAY_SPLASH_SCREEN=0)
 
 target_link_libraries(plugin PRIVATE
+    nlohmann_json::nlohmann_json
     juce::juce_audio_utils
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags)
+
+if (PROJECT_IS_TOP_LEVEL)
+    # Create symlink to compile_commands.json for IDE to pick it up
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            ${CMAKE_BINARY_DIR}/compile_commands.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json
+    )
+endif()
+

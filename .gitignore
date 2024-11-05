@@ -46,3 +46,6 @@ build/
 
 cmake-build-debug/
 cmake-build-release/
+
+.cache/
+compile_commands.json
