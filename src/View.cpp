@@ -1,6 +1,7 @@
 #include "View.hpp"
 
 #include "SvgComponent.h"
+#include "SimpleText.hpp"
 #include "juce_gui_basics/juce_gui_basics.h"
 
 #include <nlohmann/json.hpp>
@@ -45,7 +46,7 @@ void View::addViewNodesAsJuceComponents(node& n)
     }
     else
     {
-        components.emplace_back(new juce::Label(n.name, n.label));
+        components.emplace_back(new SimpleText(n.label));
         addAndMakeVisible(components.back());
         n.label_component = components.back();
     }
@@ -89,7 +90,19 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
         }
         else if (c.svg_component != nullptr)
         {
-            parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(1.f).withFlex(1.f));
+            if (c.label.empty())
+            {
+                parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(1.f).withFlex(1.f));
+            }
+            else
+            {
+                auto childFlexBox = std::make_unique<juce::FlexBox>();
+                childFlexBox->flexDirection = juce::FlexBox::Direction::column;
+                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f).withMargin(10.f));
+                flexBoxes.push_back(std::move(childFlexBox));
+                flexBoxes.back()->items.add(juce::FlexItem(*c.label_component).withMinWidth(1.f).withMaxHeight(50.f).withFlex(0.3f).withMargin(juce::FlexItem::Margin(0.f, 0.f, 20.f, 0.f)));
+                flexBoxes.back()->items.add(juce::FlexItem(*c.svg_component).withMinWidth(1.f).withFlex(0.7f));
+            }
         }
     }
 }
