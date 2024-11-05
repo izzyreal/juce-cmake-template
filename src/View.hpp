@@ -9,6 +9,7 @@ struct node {
     float margin;
     std::string label;
     std::string direction;
+    float max_height;
 
     juce::Component* svg_component;
     juce::Component* label_component;

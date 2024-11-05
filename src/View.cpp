@@ -18,6 +18,7 @@ static void from_json(const json& j, node& n)
     if (j.contains("margin"))   j.at("margin").get_to(n.margin); else n.margin = 0.f;
     if (j.contains("label"))         j.at("label").get_to(n.label);
     if (j.contains("direction")) j.at("direction").get_to(n.direction);
+    if (j.contains("max_height")) j.at("max_height").get_to(n.max_height); else n.max_height = 0.f;
 
     printf("=== Deserialized node ===\n");
     if (!n.name.empty())     printf("-     name: %s\n", n.name.c_str());
@@ -99,7 +100,16 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
                 childFlexBox->flexDirection = juce::FlexBox::Direction::row;
             }
 
-            parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f));
+            
+            if (c.max_height > 0.f)
+            {
+                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withMaxHeight(c.max_height).withFlex(1.f, 1.f, 1.f));
+            }
+            else
+            {
+                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f, 1.f, 1.f));
+            }
+
             flexBoxes.push_back(std::move(childFlexBox));
             createFlexBoxes(*flexBoxes.back(), c, flexBoxes);
         }
