@@ -27,5 +27,5 @@ class View : public juce::Component {
         node view_root;
 
         void addViewNodesAsJuceComponents(node& n);
-        void createFlexBoxes(juce::FlexBox& parent, node &n, std::vector<juce::FlexBox> &flexBoxes);
+        void createFlexBoxes(juce::FlexBox& parent, node &n, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes);
 };

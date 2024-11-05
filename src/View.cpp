@@ -73,39 +73,36 @@ View::~View()
     }
 }
 
-void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<juce::FlexBox> &flexBoxes)
+void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes)
 {
-    flexBoxes.emplace_back(juce::FlexBox());
-    flexBoxes.back().flexDirection = juce::FlexBox::Direction::row;
-
     for (auto& c : n.children)
     {
-        if (c.svg_component != nullptr)
+        const bool child_is_leaf = c.children.empty();
+
+        if (!child_is_leaf)
         {
-            parent.items.add(juce::FlexItem(*c.svg_component).withFlex(1.f).withMinWidth(1.f).withMinHeight(1.f));
+            auto childFlexBox = std::make_unique<juce::FlexBox>();
+            childFlexBox->flexDirection = juce::FlexBox::Direction::row;
+            parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f));
+            flexBoxes.push_back(std::move(childFlexBox));
+            createFlexBoxes(*flexBoxes.back(), c, flexBoxes);
         }
-        else
+        else if (c.svg_component != nullptr)
         {
-            createFlexBoxes(flexBoxes.back(), c, flexBoxes);
+            parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(1.f).withFlex(1.f));
         }
     }
-
-    parent.items.add(juce::FlexItem(flexBoxes.back()).withFlex(1.f).withMinWidth(1.f).withMinHeight(1.f));
 }
 
 void View::resized()
 {
-    std::vector<juce::FlexBox> flexBoxes;
+    std::vector<std::unique_ptr<juce::FlexBox>> flexBoxes;
 
     juce::FlexBox fb;
     fb.flexDirection = juce::FlexBox::Direction::column;
 
+    createFlexBoxes(fb, view_root, flexBoxes);
 
-    for (auto &c : view_root.children)
-    {
-        createFlexBoxes(fb, c, flexBoxes);
-    }
-
-    fb.performLayout(getLocalBounds());
+   fb.performLayout(getLocalBounds());
 }
 

@@ -15,19 +15,21 @@ class SvgComponent : public juce::Component
                 {   
                     svgDrawable = juce::Drawable::createFromSVG(*svgXml);
                     svgFile = f;
-                }    
+                    randomColor = juce::Colour::fromRGB(juce::String(svgFile.getFileName()).hashCode() & 0xFF,
+                                          (juce::String(svgFile.getFileName()).hashCode() >> 8) & 0xFF,
+                                          (juce::String(svgFile.getFileName()).hashCode() >> 16) & 0xFF);
+                }
             }
         }
     public:
         SvgComponent(std::string svg_path)
         {
-            printf("Creating SvgComponent for %s\n", svg_path.c_str());
             loadSvgFile(juce::File("/Users/izmar/projects/VMPC2000XL/vector UI/views/" + svg_path));
         }
 
         void paint(juce::Graphics& g) override
         {
-            g.fillAll(juce::Colours::yellow);
+            g.fillAll(randomColor);
             if (svgDrawable != nullptr)
             {
                 svgDrawable->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::yTop, 1.0f);
@@ -41,6 +43,7 @@ class SvgComponent : public juce::Component
     private:
         juce::File svgFile;
         std::unique_ptr<juce::Drawable> svgDrawable;
+        juce::Colour randomColor;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SvgComponent)
 };

@@ -21,6 +21,7 @@ deps/
 # to IDE project files and compiled binaries.
 
 build/
+build-xcode/
 
 ########
 
