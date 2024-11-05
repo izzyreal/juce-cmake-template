@@ -28,17 +28,31 @@ static void from_json(const json& j, node& n)
 
 void View::addViewNodesAsJuceComponents(node& n)
 {
-    if (!n.svg.empty())
+    if (n.svg.empty())
+    {
+        n.svg_component = nullptr;
+    }
+    else
     {
         components.emplace_back(new SvgComponent(n.svg));
         addAndMakeVisible(components.back());
-        n.component = components.back();
+        n.svg_component = components.back();
+    }
+
+    if (n.label.empty())
+    {
+        n.label_component = nullptr;
+    }
+    else
+    {
+        components.emplace_back(new juce::Label(n.name, n.label));
+        addAndMakeVisible(components.back());
+        n.label_component = components.back();
     }
 
     for (auto& c : n.children)
     {
         addViewNodesAsJuceComponents(c);
-        n.component = nullptr;
     }
 }
 
@@ -62,16 +76,13 @@ View::~View()
 void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<juce::FlexBox> &flexBoxes)
 {
     flexBoxes.emplace_back(juce::FlexBox());
-    flexBoxes.back().flexDirection = juce::FlexBox::Direction::column;
-    flexBoxes.back().flexWrap = juce::FlexBox::Wrap::wrap;
-    flexBoxes.back().alignContent = juce::FlexBox::AlignContent::flexStart;
-    flexBoxes.back().alignItems = juce::FlexBox::AlignItems::flexStart;
+    flexBoxes.back().flexDirection = juce::FlexBox::Direction::row;
 
     for (auto& c : n.children)
     {
-        if (c.component != nullptr)
+        if (c.svg_component != nullptr)
         {
-            parent.items.add(juce::FlexItem(*c.component).withFlex(1.f).withMinWidth(1.f).withMinHeight(getHeight() / 2.f).withMargin(n.margin));
+            parent.items.add(juce::FlexItem(*c.svg_component).withFlex(1.f).withMinWidth(1.f).withMinHeight(1.f));
         }
         else
         {
@@ -79,7 +90,7 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<juce::Fle
         }
     }
 
-    parent.items.add(juce::FlexItem(flexBoxes.back()).withFlex(1.f).withMinWidth(getWidth()).withMaxHeight(getHeight()));
+    parent.items.add(juce::FlexItem(flexBoxes.back()).withFlex(1.f).withMinWidth(1.f).withMinHeight(1.f));
 }
 
 void View::resized()
@@ -87,10 +98,8 @@ void View::resized()
     std::vector<juce::FlexBox> flexBoxes;
 
     juce::FlexBox fb;
-    fb.flexDirection = juce::FlexBox::Direction::row;
-    fb.flexWrap = juce::FlexBox::Wrap::wrap;
-    fb.alignContent = juce::FlexBox::AlignContent::flexStart;
-    fb.alignItems = juce::FlexBox::AlignItems::flexStart;
+    fb.flexDirection = juce::FlexBox::Direction::column;
+
 
     for (auto &c : view_root.children)
     {

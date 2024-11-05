@@ -27,6 +27,7 @@ class SvgComponent : public juce::Component
 
         void paint(juce::Graphics& g) override
         {
+            g.fillAll(juce::Colours::yellow);
             if (svgDrawable != nullptr)
             {
                 svgDrawable->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::yTop, 1.0f);

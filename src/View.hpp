@@ -6,9 +6,11 @@ struct node {
     std::string name;
     std::string svg;
     std::vector<node> children;
-    juce::Component* component;
     float margin;
     std::string label;
+
+    juce::Component* svg_component;
+    juce::Component* label_component;
 };
 
 class View : public juce::Component {
