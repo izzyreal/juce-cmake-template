@@ -8,6 +8,7 @@ struct node {
     std::vector<node> children;
     float margin;
     std::string label;
+    std::string direction;
 
     juce::Component* svg_component;
     juce::Component* label_component;
@@ -18,7 +19,8 @@ class View : public juce::Component {
     public:
         View();
         ~View() override;
-        
+
+        void paint(juce::Graphics&) override;
         void resized() override;
 
     private:

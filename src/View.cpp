@@ -17,6 +17,7 @@ static void from_json(const json& j, node& n)
     if (j.contains("children")) j.at("children").get_to(n.children);
     if (j.contains("margin"))   j.at("margin").get_to(n.margin); else n.margin = 0.f;
     if (j.contains("label"))         j.at("label").get_to(n.label);
+    if (j.contains("direction")) j.at("direction").get_to(n.direction);
 
     printf("=== Deserialized node ===\n");
     if (!n.name.empty())     printf("-     name: %s\n", n.name.c_str());
@@ -74,6 +75,12 @@ View::~View()
     }
 }
 
+void View::paint(juce::Graphics& g)
+{
+    juce::Colour mpc2000xl_chassis = juce::Colour::fromRGB(230, 238, 233);
+    g.fillAll(mpc2000xl_chassis);
+}
+
 void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes)
 {
     for (auto& c : n.children)
@@ -83,7 +90,15 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
         if (!child_is_leaf)
         {
             auto childFlexBox = std::make_unique<juce::FlexBox>();
-            childFlexBox->flexDirection = juce::FlexBox::Direction::row;
+            if (c.direction == "column")
+            {
+                childFlexBox->flexDirection = juce::FlexBox::Direction::column;
+            }
+            else
+            {
+                childFlexBox->flexDirection = juce::FlexBox::Direction::row;
+            }
+
             parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f));
             flexBoxes.push_back(std::move(childFlexBox));
             createFlexBoxes(*flexBoxes.back(), c, flexBoxes);
@@ -100,7 +115,7 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
                 childFlexBox->flexDirection = juce::FlexBox::Direction::column;
                 parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f).withMargin(10.f));
                 flexBoxes.push_back(std::move(childFlexBox));
-                flexBoxes.back()->items.add(juce::FlexItem(*c.label_component).withMinWidth(1.f).withMaxHeight(50.f).withFlex(0.3f).withMargin(juce::FlexItem::Margin(0.f, 0.f, 20.f, 0.f)));
+                flexBoxes.back()->items.add(juce::FlexItem(*c.label_component).withMinWidth(1.f).withMaxHeight(50.f).withFlex(0.3f).withMargin(juce::FlexItem::Margin(0.f, 0.f, 10.f, 0.f)));
                 flexBoxes.back()->items.add(juce::FlexItem(*c.svg_component).withMinWidth(1.f).withFlex(0.7f));
             }
         }

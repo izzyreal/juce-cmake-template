@@ -13,7 +13,8 @@ class SimpleText : public juce::Component {
             auto text_width = g.getCurrentFont().getStringWidth(text);
             const auto label_margin = getHeight() * 0.6f;
             auto background_rect = juce::Rectangle((getWidth() - (text_width + (label_margin * 2))) / 2.f, 0.f, text_width + (label_margin * 2), (float) getHeight());
-            g.setColour(juce::Colours::darkorange);
+            juce::Colour label_background = juce::Colour::fromRGB(139, 151, 163);
+            g.setColour(label_background);
             g.fillRect(background_rect);
             g.setColour(juce::Colours::black);
             g.drawText(text, 0, 0, getWidth(), getHeight(), juce::Justification::centred);
