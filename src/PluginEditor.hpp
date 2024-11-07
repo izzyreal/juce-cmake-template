@@ -10,6 +10,7 @@ public:
     explicit PluginEditor(PluginProcessor&);
 
     bool keyPressed(const juce::KeyPress &keyPress) override;
+    void resized() override;
 
 private:
     PluginProcessor &pluginProcessor;

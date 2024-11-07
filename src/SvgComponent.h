@@ -31,12 +31,7 @@ class SvgComponent : public juce::Component
 
         juce::Rectangle<float> getDrawableBounds()
         {
-            if (svgDrawable != nullptr)
-            {
-                printf("drawable width for '%s' is %f\n", svgFile.getFileName().toRawUTF8(), svgDrawable->getDrawableBounds().getWidth());
-            }
             return svgDrawable == nullptr ? juce::Rectangle<float>() : svgDrawable->getDrawableBounds();
-
         }
 
         void paint(juce::Graphics& g) override

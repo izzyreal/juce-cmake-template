@@ -101,6 +101,7 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
         if (!child_is_leaf)
         {
             auto childFlexBox = std::make_unique<juce::FlexBox>();
+            childFlexBox->justifyContent = juce::FlexBox::JustifyContent::center;
             if (c.direction == "column")
             {
                 childFlexBox->flexDirection = juce::FlexBox::Direction::column;
