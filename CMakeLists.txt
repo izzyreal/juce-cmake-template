@@ -4,6 +4,8 @@ include(FetchContent)
 
 project(plugin VERSION 0.0.1)
 
+#add_definitions(-DJUCE_ENABLE_REPAINT_DEBUGGING)
+
 FetchContent_Declare(JUCE
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
   GIT_TAG        7.0.9
@@ -17,10 +19,15 @@ FetchContent_Declare(json
   SOURCE_DIR     ${CMAKE_SOURCE_DIR}/deps/json
 )
 
+FetchContent_Declare (melatonin_inspector
+        GIT_REPOSITORY https://github.com/sudara/melatonin_inspector.git
+        GIT_TAG origin/main
+        SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/melatonin_inspector)
+
 set (JUCE_COPY_PLUGIN_AFTER_BUILD ON)
 set (JUCE_ENABLE_MODULE_SOURCE_GROUPS ON)
 
-FetchContent_MakeAvailable(JUCE json)
+FetchContent_MakeAvailable(JUCE json melatonin_inspector)
 
 juce_add_plugin(plugin
     BUNDLE_ID org.example.plugin
@@ -54,6 +61,7 @@ target_compile_definitions(plugin PUBLIC
 
 target_link_libraries(plugin PRIVATE
     nlohmann_json::nlohmann_json
+    melatonin_inspector
     juce::juce_audio_utils
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
