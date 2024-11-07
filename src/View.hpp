@@ -13,6 +13,7 @@ struct node {
     std::string direction;
     float flex_grow;
     bool spacer;
+    std::string align_items;
 
     juce::Component* svg_component;
     juce::Component* label_component;

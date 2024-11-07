@@ -18,6 +18,6 @@ private:
     melatonin::Inspector* inspector = nullptr;
     PluginProcessor &pluginProcessor;
     View* view = nullptr;
-    int initial_width = 200;
-    int initial_height = 400;
+    int initial_width = 300;
+    int initial_height = 300;
 };

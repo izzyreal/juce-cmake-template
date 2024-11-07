@@ -20,6 +20,7 @@ static void from_json(const json& j, node& n)
     if (j.contains("label_style")) j.at("label_style").get_to(n.label_style);
     if (j.contains("direction"))   j.at("direction").get_to(n.direction);
     if (j.contains("flex_grow"))   j.at("flex_grow").get_to(n.flex_grow); else n.flex_grow = 0.f;
+    if (j.contains("align_items")) j.at("align_items").get_to(n.align_items);
     
     n.spacer = n.name == "spacer";
 
@@ -119,6 +120,15 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
         {
             auto childFlexBox = std::make_unique<juce::FlexBox>();
             childFlexBox->justifyContent = juce::FlexBox::JustifyContent::center;
+
+            if (c.align_items == "flex_end")
+            {
+                childFlexBox->alignItems = juce::FlexBox::AlignItems::flexEnd;
+            }
+            else if (c.align_items == "flex_start")
+            {
+                childFlexBox->alignItems = juce::FlexBox::AlignItems::flexStart;
+            }
 
             if (c.direction == "column")
             {
