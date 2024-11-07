@@ -90,7 +90,7 @@ class SimpleText : public juce::Component {
 
         juce::Font getFont()
         {
-            return juce::Font("Helvetica Neue", BASE_FONT_SIZE * getScale(), juce::Font::plain);
+            return juce::Font("Helvetica Neue", BASE_FONT_SIZE * getScale(), juce::Font::bold);
         }
 
         float getLabelMargin()

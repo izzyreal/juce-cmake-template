@@ -170,7 +170,7 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
                 auto label_item = juce::FlexItem(*c.label_component)
                     .withMinWidth(childFlexBoxMinWidth)
                     .withMinHeight(labelHeight)
-                    .withMargin(juce::FlexItem::Margin(0.f, 0.f, BASE_FONT_SIZE * getScale(), 0.f));
+                    .withMargin(juce::FlexItem::Margin(0.f, 0.f, BASE_FONT_SIZE * 0.5 * getScale(), 0.f));
                 
                 flexBoxes.back()->items.add(label_item);
                 flexBoxes.back()->items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight));
