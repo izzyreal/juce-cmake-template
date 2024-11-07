@@ -10,15 +10,17 @@
 
 using json = nlohmann::json;
 
+const float LABEL_HEIGHT = 5.f;
+
 static void from_json(const json& j, node& n)
 {
-    if (j.contains("name"))     j.at("name").get_to(n.name);
-    if (j.contains("svg"))      j.at("svg").get_to(n.svg);
-    if (j.contains("children")) j.at("children").get_to(n.children);
-    if (j.contains("margin"))   j.at("margin").get_to(n.margin); else n.margin = 0.f;
-    if (j.contains("label"))         j.at("label").get_to(n.label);
-    if (j.contains("direction")) j.at("direction").get_to(n.direction);
-    if (j.contains("max_height")) j.at("max_height").get_to(n.max_height); else n.max_height = 0.f;
+    if (j.contains("name"))        j.at("name").get_to(n.name);
+    if (j.contains("svg"))         j.at("svg").get_to(n.svg);
+    if (j.contains("children"))    j.at("children").get_to(n.children);
+    if (j.contains("margin"))      j.at("margin").get_to(n.margin); else n.margin = 0.f;
+    if (j.contains("label"))       j.at("label").get_to(n.label);
+    if (j.contains("label_style")) j.at("label_style").get_to(n.label_style);
+    if (j.contains("direction"))   j.at("direction").get_to(n.direction);
 
     if (j.contains("include"))
     {
@@ -28,11 +30,12 @@ static void from_json(const json& j, node& n)
     }
 
     printf("=== Deserialized node ===\n");
-    if (!n.name.empty())     printf("-     name: %s\n", n.name.c_str());
-    if (!n.svg.empty())      printf("-      svg: %s\n", n.svg.c_str());
-    if (!n.children.empty()) printf("- children: %zu\n", n.children.size());
-    if (n.margin != 0.f)       printf("-   margin: %f\n", n.margin);
-    if (!n.label.empty())    printf("-    label: %s\n", n.label.c_str());
+    if (!n.name.empty())        printf("-        name: %s\n", n.name.c_str());
+    if (!n.svg.empty())         printf("-         svg: %s\n", n.svg.c_str());
+    if (!n.children.empty())    printf("-    children: %zu\n", n.children.size());
+    if (n.margin != 0.f)        printf("-      margin: %f\n", n.margin);
+    if (!n.label.empty())       printf("-       label: %s\n", n.label.c_str());
+    if (!n.label_style.empty()) printf("- label_style: %s\n", n.label_style.c_str());
     printf("=========================\n");
 }
 
@@ -55,7 +58,7 @@ void View::addViewNodesAsJuceComponents(node& n)
     }
     else
     {
-        components.emplace_back(new SimpleText(n.label));
+        components.emplace_back(new SimpleText(n.label, n.label_style));
         addAndMakeVisible(components.back());
         n.label_component = components.back();
     }
@@ -107,33 +110,40 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
                 childFlexBox->flexDirection = juce::FlexBox::Direction::row;
             }
 
-            
-            if (c.max_height > 0.f)
-            {
-                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withMaxHeight(c.max_height).withFlex(1.f, 1.f, 1.f));
-            }
-            else
-            {
-                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f, 1.f, 1.f));
-            }
+
+            parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f));
 
             flexBoxes.push_back(std::move(childFlexBox));
             createFlexBoxes(*flexBoxes.back(), c, flexBoxes);
         }
         else if (c.svg_component != nullptr)
         {
+            const auto drawable_bounds = dynamic_cast<SvgComponent*>(c.svg_component)->getDrawableBounds();
+            const auto minWidth = drawable_bounds.getWidth();
+            const auto minHeight = drawable_bounds.getHeight();
+
             if (c.label.empty())
             {
-                parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(1.f).withFlex(1.f));
+                parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight));
             }
             else
             {
                 auto childFlexBox = std::make_unique<juce::FlexBox>();
                 childFlexBox->flexDirection = juce::FlexBox::Direction::column;
-                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f).withMargin(10.f));
+                const auto min_width_label = dynamic_cast<SimpleText*>(c.label_component)->getTotalWidth();
+
+                const auto childFlexBoxMinWidth = std::max<float>((float) min_width_label, minWidth);
+
+                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + (LABEL_HEIGHT*2)));
                 flexBoxes.push_back(std::move(childFlexBox));
-                flexBoxes.back()->items.add(juce::FlexItem(*c.label_component).withMinWidth(1.f).withMinHeight(20.f).withMaxHeight(20.f).withFlex(0.3f).withMargin(juce::FlexItem::Margin(0.f, 0.f, 10.f, 0.f)));
-                flexBoxes.back()->items.add(juce::FlexItem(*c.svg_component).withMinWidth(1.f).withFlex(0.7f));
+
+                auto label_item = juce::FlexItem(*c.label_component)
+                    .withMinWidth(childFlexBoxMinWidth)
+                    .withMinHeight(LABEL_HEIGHT)
+                    .withMargin(juce::FlexItem::Margin(0.f, 0.f, LABEL_HEIGHT, 0.f));
+                
+                flexBoxes.back()->items.add(label_item);
+                flexBoxes.back()->items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight));
             }
         }
     }
@@ -148,6 +158,6 @@ void View::resized()
 
     createFlexBoxes(fb, view_root, flexBoxes);
 
-   fb.performLayout(getLocalBounds());
+    fb.performLayout(getLocalBounds());
 }
 

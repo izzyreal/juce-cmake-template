@@ -14,6 +14,7 @@ class SvgComponent : public juce::Component
                 if (svgXml != nullptr)
                 {   
                     svgDrawable = juce::Drawable::createFromSVG(*svgXml);
+                    svgDrawable->getDrawableBounds();
                     svgFile = f;
                     randomColor = juce::Colour::fromRGB(juce::String(svgFile.getFileName()).hashCode() & 0xFF,
                                           (juce::String(svgFile.getFileName()).hashCode() >> 8) & 0xFF,
@@ -21,10 +22,21 @@ class SvgComponent : public juce::Component
                 }
             }
         }
+
     public:
         SvgComponent(std::string svg_path)
         {
             loadSvgFile(juce::File("/Users/izmar/projects/VMPC2000XL/vector UI/views/" + svg_path));
+        }
+
+        juce::Rectangle<float> getDrawableBounds()
+        {
+            if (svgDrawable != nullptr)
+            {
+                printf("drawable width for '%s' is %f\n", svgFile.getFileName().toRawUTF8(), svgDrawable->getDrawableBounds().getWidth());
+            }
+            return svgDrawable == nullptr ? juce::Rectangle<float>() : svgDrawable->getDrawableBounds();
+
         }
 
         void paint(juce::Graphics& g) override
@@ -32,7 +44,7 @@ class SvgComponent : public juce::Component
             //g.fillAll(randomColor);
             if (svgDrawable != nullptr)
             {
-                svgDrawable->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::yTop, 1.0f);
+                svgDrawable->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 1.0f);
             }
             else
             {
