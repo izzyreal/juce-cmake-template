@@ -3,16 +3,23 @@
 PluginEditor::PluginEditor(PluginProcessor& p)
         : AudioProcessorEditor(&p), pluginProcessor(p)
 {
-    setSize(500, 800);
+    view = new View([&] { return (float) getHeight() / initial_height; });
+
+    setSize(initial_width, initial_height);
     setWantsKeyboardFocus(true);
-    view.setBounds(0, 0, 500, 800);
+
     setResizable(true, true);
     addAndMakeVisible(view);
 }
 
+PluginEditor::~PluginEditor()
+{
+    delete view;
+}
+
 void PluginEditor::resized()
 {
-    view.setBounds(0, 0, getWidth(), getHeight());
+    view->setBounds(0, 0, getWidth(), getHeight());
 }
 
 bool PluginEditor::keyPressed(const juce::KeyPress &)

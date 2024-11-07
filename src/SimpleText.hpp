@@ -2,14 +2,20 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include <string>
+#include <functional>
 
 class SimpleText : public juce::Component {
     public:
-        SimpleText(const std::string _text, const std::string _label_style) : text(_text), label_style(_label_style) {}
+        SimpleText(
+                const std::function<float()>& getScaleToUse,
+                const std::string _text,
+                const std::string _label_style)
+            : text(_text), label_style(_label_style), getScale(getScaleToUse)
+        {}
 
        void paint(juce::Graphics& g) override
         {
-            g.setFont(font);
+            g.setFont(getFont());
 
             if (label_style == "top_with_background")
             {
@@ -25,13 +31,23 @@ class SimpleText : public juce::Component {
 
         float getTotalWidth()
         {
-            return (float) font.getStringWidth(text) + (label_margin * 2);
+            return (float) getFont().getStringWidth(text) + (getLabelMargin() * 2);
         }
 
     private:
         std::string text;
         std::string label_style;
-        juce::Font font = juce::Font("Helvetica Neue", 7.f, juce::Font::plain);
-        const float label_margin = font.getHeight() * 0.6f;
+        const std::function<float()> getScale;
+
+        juce::Font getFont()
+        {
+            return juce::Font("Helvetica Neue", 5.f * getScale(), juce::Font::plain);
+        }
+
+        float getLabelMargin()
+        {
+            return getFont().getHeight() * 0.6f;
+        }
+
 };
 

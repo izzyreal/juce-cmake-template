@@ -1,6 +1,7 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include <vector>
+#include <functional>
 
 struct node {
     std::string name;
@@ -18,7 +19,7 @@ struct node {
 class View : public juce::Component {
 
     public:
-        View();
+        View(const std::function<float()>& getScale);
         ~View() override;
 
         void paint(juce::Graphics&) override;
@@ -28,7 +29,9 @@ class View : public juce::Component {
         std::string name = "default";
         std::vector<juce::Component*> components;
         node view_root;
+        const std::function<float()> getScale;
 
         void addViewNodesAsJuceComponents(node& n);
         void createFlexBoxes(juce::FlexBox& parent, node &n, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes);
+        float getLabelHeight();
 };

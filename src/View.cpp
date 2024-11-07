@@ -10,8 +10,6 @@
 
 using json = nlohmann::json;
 
-const float LABEL_HEIGHT = 5.f;
-
 static void from_json(const json& j, node& n)
 {
     if (j.contains("name"))        j.at("name").get_to(n.name);
@@ -58,7 +56,7 @@ void View::addViewNodesAsJuceComponents(node& n)
     }
     else
     {
-        components.emplace_back(new SimpleText(n.label, n.label_style));
+        components.emplace_back(new SimpleText(getScale, n.label, n.label_style));
         addAndMakeVisible(components.back());
         n.label_component = components.back();
     }
@@ -69,7 +67,7 @@ void View::addViewNodesAsJuceComponents(node& n)
     }
 }
 
-View::View()
+View::View(const std::function<float()>& getScaleToUse) : getScale(getScaleToUse)
 {
     std::ifstream jsonFile("/Users/izmar/projects/VMPC2000XL/vector UI/views/default.json");
     json data = json::parse(jsonFile);
@@ -90,6 +88,11 @@ void View::paint(juce::Graphics& g)
 {
     juce::Colour mpc2000xl_chassis = juce::Colour::fromRGB(230, 238, 233);
     g.fillAll(mpc2000xl_chassis);
+}
+
+float View::getLabelHeight()
+{
+    return 5.f * getScale();
 }
 
 void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes)
@@ -120,8 +123,8 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
         else if (c.svg_component != nullptr)
         {
             const auto drawable_bounds = dynamic_cast<SvgComponent*>(c.svg_component)->getDrawableBounds();
-            const auto minWidth = drawable_bounds.getWidth();
-            const auto minHeight = drawable_bounds.getHeight();
+            const auto minWidth = drawable_bounds.getWidth() * getScale();
+            const auto minHeight = drawable_bounds.getHeight() * getScale();
 
             if (c.label.empty())
             {
@@ -135,13 +138,13 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
 
                 const auto childFlexBoxMinWidth = std::max<float>((float) min_width_label, minWidth);
 
-                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + (LABEL_HEIGHT*2)));
+                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + (getLabelHeight() * 2)));
                 flexBoxes.push_back(std::move(childFlexBox));
 
                 auto label_item = juce::FlexItem(*c.label_component)
                     .withMinWidth(childFlexBoxMinWidth)
-                    .withMinHeight(LABEL_HEIGHT)
-                    .withMargin(juce::FlexItem::Margin(0.f, 0.f, LABEL_HEIGHT, 0.f));
+                    .withMinHeight(getLabelHeight())
+                    .withMargin(juce::FlexItem::Margin(0.f, 0.f, getLabelHeight(), 0.f));
                 
                 flexBoxes.back()->items.add(label_item);
                 flexBoxes.back()->items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight));
