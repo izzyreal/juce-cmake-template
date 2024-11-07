@@ -132,7 +132,7 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
                 childFlexBox->flexDirection = juce::FlexBox::Direction::column;
                 parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f).withMargin(10.f));
                 flexBoxes.push_back(std::move(childFlexBox));
-                flexBoxes.back()->items.add(juce::FlexItem(*c.label_component).withMinWidth(1.f).withMaxHeight(50.f).withFlex(0.3f).withMargin(juce::FlexItem::Margin(0.f, 0.f, 10.f, 0.f)));
+                flexBoxes.back()->items.add(juce::FlexItem(*c.label_component).withMinWidth(1.f).withMinHeight(20.f).withMaxHeight(20.f).withFlex(0.3f).withMargin(juce::FlexItem::Margin(0.f, 0.f, 10.f, 0.f)));
                 flexBoxes.back()->items.add(juce::FlexItem(*c.svg_component).withMinWidth(1.f).withFlex(0.7f));
             }
         }
