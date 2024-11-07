@@ -80,7 +80,7 @@ class SimpleText : public juce::Component {
                 upper = std::max<int>(getFont().getStringWidth(buf), upper);
             }
 
-            return ((float) upper + (getLabelMargin() * 2)) * getScale();
+            return ((float) upper + (getLabelMargin() * 2));
         }
 
     private:

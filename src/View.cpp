@@ -19,6 +19,9 @@ static void from_json(const json& j, node& n)
     if (j.contains("label"))       j.at("label").get_to(n.label);
     if (j.contains("label_style")) j.at("label_style").get_to(n.label_style);
     if (j.contains("direction"))   j.at("direction").get_to(n.direction);
+    if (j.contains("flex_grow"))   j.at("flex_grow").get_to(n.flex_grow); else n.flex_grow = 0.f;
+    
+    n.spacer = n.name == "spacer";
 
     if (j.contains("include"))
     {
@@ -34,6 +37,7 @@ static void from_json(const json& j, node& n)
     if (n.margin != 0.f)        printf("-      margin: %f\n", n.margin);
     if (!n.label.empty())       printf("-       label: %s\n", n.label.c_str());
     if (!n.label_style.empty()) printf("- label_style: %s\n", n.label_style.c_str());
+    if (n.flex_grow != 0.f)     printf("-   flex_grow: %f\n", n.flex_grow);
     printf("=========================\n");
 }
 
@@ -101,12 +105,21 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
 {
     for (auto& c : n.children)
     {
+        const float flexGrow = c.flex_grow > 0 ? c.flex_grow : 1.f;
+
+        if (c.spacer)
+        {
+            parent.items.add(juce::FlexItem().withMinWidth(1.f).withFlex(flexGrow));
+            continue;
+        }
+
         const bool child_is_leaf = c.children.empty();
 
         if (!child_is_leaf)
         {
             auto childFlexBox = std::make_unique<juce::FlexBox>();
             childFlexBox->justifyContent = juce::FlexBox::JustifyContent::center;
+
             if (c.direction == "column")
             {
                 childFlexBox->flexDirection = juce::FlexBox::Direction::column;
@@ -116,8 +129,7 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
                 childFlexBox->flexDirection = juce::FlexBox::Direction::row;
             }
 
-
-            parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(1.f));
+            parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(flexGrow));
 
             flexBoxes.push_back(std::move(childFlexBox));
             createFlexBoxes(*flexBoxes.back(), c, flexBoxes);
@@ -130,7 +142,7 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
 
             if (c.label.empty())
             {
-                parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight));
+                parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight).withFlex(flexGrow));
             }
             else
             {
@@ -142,7 +154,7 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
 
                 const auto labelHeight = getLabelHeight(c.label);
 
-                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + labelHeight));
+                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + labelHeight).withFlex(flexGrow));
                 flexBoxes.push_back(std::move(childFlexBox));
 
                 auto label_item = juce::FlexItem(*c.label_component)

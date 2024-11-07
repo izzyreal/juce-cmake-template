@@ -11,6 +11,8 @@ struct node {
     std::string label;
     std::string label_style;
     std::string direction;
+    float flex_grow;
+    bool spacer;
 
     juce::Component* svg_component;
     juce::Component* label_component;
