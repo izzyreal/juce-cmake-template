@@ -4,6 +4,9 @@
 #include <string>
 #include <functional>
 
+const float BASE_FONT_SIZE = 5.f;
+const float LINE_SIZE = BASE_FONT_SIZE * 0.3;
+
 class SimpleText : public juce::Component {
     public:
         SimpleText(
@@ -26,12 +29,58 @@ class SimpleText : public juce::Component {
             }
 
             g.setColour(juce::Colours::black);
-            g.drawText(text, 0, 0, getWidth(), getHeight(), juce::Justification::centred);
+
+            int row = 0;
+            std::string buf;
+            bool should_draw = false;
+
+            for (auto c : text) 
+            {
+                if (c == '\n')
+                {
+                    g.drawText(buf, 0, row * (BASE_FONT_SIZE + LINE_SIZE) * getScale(), getWidth(), getHeight(), juce::Justification::centredTop);
+                    row++;
+                    should_draw = false;
+                    buf.clear();
+                    continue;
+                }
+                buf += c;
+                should_draw = true;
+            }
+
+            if (should_draw && !buf.empty())
+            {
+                g.drawText(buf, 0, row * (BASE_FONT_SIZE + LINE_SIZE) * getScale(), getWidth(), getHeight(), juce::Justification::centredTop);
+            }
         }
 
         float getTotalWidth()
         {
-            return (float) getFont().getStringWidth(text) + (getLabelMargin() * 2);
+            int upper = 0;
+
+            std::string buf;
+            bool should_check = true;
+
+            for (auto c : text)
+            {
+                if (c == '\n')  
+                {
+                    upper = std::max<int>(getFont().getStringWidth(buf), upper);
+                    buf.clear();
+                    should_check = false;
+                    continue;
+                }
+
+                buf += c;
+                should_check = true;
+            }
+
+            if (should_check && !buf.empty())
+            {
+                upper = std::max<int>(getFont().getStringWidth(buf), upper);
+            }
+
+            return ((float) upper + (getLabelMargin() * 2)) * getScale();
         }
 
     private:
@@ -41,7 +90,7 @@ class SimpleText : public juce::Component {
 
         juce::Font getFont()
         {
-            return juce::Font("Helvetica Neue", 5.f * getScale(), juce::Font::plain);
+            return juce::Font("Helvetica Neue", BASE_FONT_SIZE * getScale(), juce::Font::plain);
         }
 
         float getLabelMargin()

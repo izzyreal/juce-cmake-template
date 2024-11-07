@@ -7,7 +7,7 @@ PluginEditor::PluginEditor(PluginProcessor& p)
 {
     view = new View([&] { return (float) getHeight() / initial_height; });
 
-    setSize(initial_width, initial_height);
+    setSize(initial_width*1.5, initial_height*1.5);
     setWantsKeyboardFocus(true);
 
     setResizable(true, true);

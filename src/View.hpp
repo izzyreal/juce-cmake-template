@@ -33,5 +33,5 @@ class View : public juce::Component {
 
         void addViewNodesAsJuceComponents(node& n);
         void createFlexBoxes(juce::FlexBox& parent, node &n, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes);
-        float getLabelHeight();
+        float getLabelHeight(const std::string& text);
 };

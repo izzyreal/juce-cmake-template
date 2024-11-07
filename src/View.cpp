@@ -90,9 +90,11 @@ void View::paint(juce::Graphics& g)
     g.fillAll(mpc2000xl_chassis);
 }
 
-float View::getLabelHeight()
+float View::getLabelHeight(const std::string& text)
 {
-    return 5.f * getScale();
+    auto newlineCount = std::count(text.begin(), text.end(), '\n');
+
+    return ((BASE_FONT_SIZE * (newlineCount + 1)) + (LINE_SIZE * newlineCount)) * getScale();
 }
 
 void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes)
@@ -138,13 +140,15 @@ void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::uniq
 
                 const auto childFlexBoxMinWidth = std::max<float>((float) min_width_label, minWidth);
 
-                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + (getLabelHeight() * 2)));
+                const auto labelHeight = getLabelHeight(c.label);
+
+                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + labelHeight));
                 flexBoxes.push_back(std::move(childFlexBox));
 
                 auto label_item = juce::FlexItem(*c.label_component)
                     .withMinWidth(childFlexBoxMinWidth)
-                    .withMinHeight(getLabelHeight())
-                    .withMargin(juce::FlexItem::Margin(0.f, 0.f, getLabelHeight(), 0.f));
+                    .withMinHeight(labelHeight)
+                    .withMargin(juce::FlexItem::Margin(0.f, 0.f, BASE_FONT_SIZE * getScale(), 0.f));
                 
                 flexBoxes.back()->items.add(label_item);
                 flexBoxes.back()->items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight));
