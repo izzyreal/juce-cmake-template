@@ -13,6 +13,7 @@ using json = nlohmann::json;
 static void from_json(const json& j, node& n)
 {
     if (j.contains("name"))        j.at("name").get_to(n.name);
+    if (j.contains("type"))        j.at("type").get_to(n.node_type);
     if (j.contains("svg"))         j.at("svg").get_to(n.svg);
     if (j.contains("children"))    j.at("children").get_to(n.children);
     if (j.contains("margin"))      j.at("margin").get_to(n.margin); else n.margin = 0.f;
@@ -21,8 +22,6 @@ static void from_json(const json& j, node& n)
     if (j.contains("direction"))   j.at("direction").get_to(n.direction);
     if (j.contains("flex_grow"))   j.at("flex_grow").get_to(n.flex_grow); else n.flex_grow = 0.f;
     if (j.contains("align_items")) j.at("align_items").get_to(n.align_items);
-    
-    n.spacer = n.name == "spacer";
 
     if (j.contains("include"))
     {
@@ -97,85 +96,113 @@ void View::paint(juce::Graphics& g)
 
 float View::getLabelHeight(const std::string& text)
 {
-    auto newlineCount = std::count(text.begin(), text.end(), '\n');
+    const auto newlineCount = (float) std::count(text.begin(), text.end(), '\n');
 
     return ((BASE_FONT_SIZE * (newlineCount + 1)) + (LINE_SIZE * newlineCount)) * getScale();
 }
 
-void View::createFlexBoxes(juce::FlexBox& parent, node& n, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes)
+void View::processSvgWithLabel(
+        juce::FlexBox& parent,
+        std::vector<std::unique_ptr<juce::FlexBox>>& flexBoxes,
+        const float minWidth,
+        const float minHeight,
+        const float flexGrow,
+        const std::string& labelText,
+        juce::Component* labelComponent,
+        juce::Component* svgComponent)
 {
-    for (auto& c : n.children)
+    auto childFlexBox = std::make_unique<juce::FlexBox>();
+    childFlexBox->flexDirection = juce::FlexBox::Direction::column;
+    const auto min_width_label = dynamic_cast<SimpleText*>(labelComponent)->getTotalWidth();
+
+    const auto childFlexBoxMinWidth = std::max<float>((float) min_width_label, minWidth);
+
+    const auto labelHeight = getLabelHeight(labelText);
+
+    parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + labelHeight).withFlex(flexGrow));
+    flexBoxes.push_back(std::move(childFlexBox));
+
+    auto label_item = juce::FlexItem(*labelComponent)
+        .withMinWidth(childFlexBoxMinWidth)
+        .withMinHeight(labelHeight)
+        .withMargin(juce::FlexItem::Margin(0.f, 0.f, BASE_FONT_SIZE * 0.5f * getScale(), 0.f));
+
+    flexBoxes.back()->items.add(label_item);
+    flexBoxes.back()->items.add(juce::FlexItem(*svgComponent).withMinWidth(minWidth).withMinHeight(minHeight));
+}
+
+void View::processFlexBox(
+        juce::FlexBox& parent,
+        const std::vector<node>& children,
+        std::vector<std::unique_ptr<juce::FlexBox>>& flexBoxes,
+        const std::string& alignItems,
+        const std::string& direction,
+        const float flexGrow)
+{
+    auto childFlexBox = std::make_unique<juce::FlexBox>();
+    childFlexBox->justifyContent = juce::FlexBox::JustifyContent::center;
+
+    if (alignItems == "flex_end")
+    {
+        childFlexBox->alignItems = juce::FlexBox::AlignItems::flexEnd;
+    }
+    else if (alignItems == "flex_start")
+    {
+        childFlexBox->alignItems = juce::FlexBox::AlignItems::flexStart;
+    }
+
+    if (direction == "column")
+    {
+        childFlexBox->flexDirection = juce::FlexBox::Direction::column;
+    }
+    else if (direction == "row")
+    {
+        childFlexBox->flexDirection = juce::FlexBox::Direction::row;
+    }
+
+    parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(flexGrow));
+
+    flexBoxes.push_back(std::move(childFlexBox));
+    processChildren(*flexBoxes.back(), children, flexBoxes);
+}
+
+void View::processChildren(
+        juce::FlexBox& parent,
+        const std::vector<node>& children,
+        std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes)
+{
+    for (auto& c : children)
     {
         const float flexGrow = c.flex_grow > 0 ? c.flex_grow : 1.f;
 
-        if (c.spacer)
+        if (c.node_type == "spacer")
         {
             parent.items.add(juce::FlexItem().withMinWidth(1.f).withFlex(flexGrow));
             continue;
         }
 
-        const bool child_is_leaf = c.children.empty();
-
-        if (!child_is_leaf)
+        if (c.node_type == "flex_box")
         {
-            auto childFlexBox = std::make_unique<juce::FlexBox>();
-            childFlexBox->justifyContent = juce::FlexBox::JustifyContent::center;
-
-            if (c.align_items == "flex_end")
-            {
-                childFlexBox->alignItems = juce::FlexBox::AlignItems::flexEnd;
-            }
-            else if (c.align_items == "flex_start")
-            {
-                childFlexBox->alignItems = juce::FlexBox::AlignItems::flexStart;
-            }
-
-            if (c.direction == "column")
-            {
-                childFlexBox->flexDirection = juce::FlexBox::Direction::column;
-            }
-            else
-            {
-                childFlexBox->flexDirection = juce::FlexBox::Direction::row;
-            }
-
-            parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(flexGrow));
-
-            flexBoxes.push_back(std::move(childFlexBox));
-            createFlexBoxes(*flexBoxes.back(), c, flexBoxes);
+            processFlexBox(parent, c.children, flexBoxes, c.align_items, c.direction, flexGrow);
+            continue;
         }
-        else if (c.svg_component != nullptr)
+
+        if (c.svg_component == nullptr)
         {
-            const auto drawable_bounds = dynamic_cast<SvgComponent*>(c.svg_component)->getDrawableBounds();
-            const auto minWidth = drawable_bounds.getWidth() * getScale();
-            const auto minHeight = drawable_bounds.getHeight() * getScale();
-
-            if (c.label.empty())
-            {
-                parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight).withFlex(flexGrow));
-            }
-            else
-            {
-                auto childFlexBox = std::make_unique<juce::FlexBox>();
-                childFlexBox->flexDirection = juce::FlexBox::Direction::column;
-                const auto min_width_label = dynamic_cast<SimpleText*>(c.label_component)->getTotalWidth();
-
-                const auto childFlexBoxMinWidth = std::max<float>((float) min_width_label, minWidth);
-
-                const auto labelHeight = getLabelHeight(c.label);
-
-                parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + labelHeight).withFlex(flexGrow));
-                flexBoxes.push_back(std::move(childFlexBox));
-
-                auto label_item = juce::FlexItem(*c.label_component)
-                    .withMinWidth(childFlexBoxMinWidth)
-                    .withMinHeight(labelHeight)
-                    .withMargin(juce::FlexItem::Margin(0.f, 0.f, BASE_FONT_SIZE * 0.5 * getScale(), 0.f));
-                
-                flexBoxes.back()->items.add(label_item);
-                flexBoxes.back()->items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight));
-            }
+            continue;
         }
+
+        const auto drawable_bounds = dynamic_cast<SvgComponent*>(c.svg_component)->getDrawableBounds();
+        const auto minWidth = drawable_bounds.getWidth() * getScale();
+        const auto minHeight = drawable_bounds.getHeight() * getScale();
+
+        if (c.label.empty())
+        {
+            parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight).withFlex(flexGrow));
+            continue;
+        }
+
+        processSvgWithLabel(parent, flexBoxes, minWidth, minHeight, flexGrow, c.label, c.label_component, c.svg_component);
     }
 }
 
@@ -183,11 +210,11 @@ void View::resized()
 {
     std::vector<std::unique_ptr<juce::FlexBox>> flexBoxes;
 
-    juce::FlexBox fb;
-    fb.flexDirection = juce::FlexBox::Direction::column;
+    juce::FlexBox rootFlexBox;
+    rootFlexBox.flexDirection = juce::FlexBox::Direction::column;
 
-    createFlexBoxes(fb, view_root, flexBoxes);
+    processChildren(rootFlexBox, view_root.children, flexBoxes);
 
-    fb.performLayout(getLocalBounds());
+    rootFlexBox.performLayout(getLocalBounds());
 }
 

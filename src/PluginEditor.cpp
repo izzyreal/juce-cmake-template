@@ -5,9 +5,9 @@
 PluginEditor::PluginEditor(PluginProcessor& p)
         : AudioProcessorEditor(&p), pluginProcessor(p)
 {
-    view = new View([&] { return (float) getHeight() / initial_height; });
+    view = new View([&] { return (float) getHeight() / (float) initial_height; });
 
-    setSize(initial_width*2.5, initial_height*2.5);
+    setSize((int) (initial_width * initial_scale), (int) (initial_height * initial_scale));
     setWantsKeyboardFocus(true);
 
     setResizable(true, true);

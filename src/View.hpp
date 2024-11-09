@@ -5,6 +5,7 @@
 
 struct node {
     std::string name;
+    std::string node_type;
     std::string svg;
     std::vector<node> children;
     float margin;
@@ -12,7 +13,6 @@ struct node {
     std::string label_style;
     std::string direction;
     float flex_grow;
-    bool spacer;
     std::string align_items;
 
     juce::Component* svg_component;
@@ -34,7 +34,25 @@ class View : public juce::Component {
         node view_root;
         const std::function<float()> getScale;
 
+        void processFlexBox(
+                juce::FlexBox& parent,
+                const std::vector<node>& children,
+                std::vector<std::unique_ptr<juce::FlexBox>>& flexBoxes,
+                const std::string& alignItems,
+                const std::string& direction,
+                const float flexGrow);
+
+        void processSvgWithLabel(
+                juce::FlexBox& parent,
+                std::vector<std::unique_ptr<juce::FlexBox>>& flexBoxes,
+                const float minWidth,
+                const float minHeight,
+                const float flexGrow,
+                const std::string& labelText,
+                juce::Component* labelComponent,
+                juce::Component* svgComponent);
+
         void addViewNodesAsJuceComponents(node& n);
-        void createFlexBoxes(juce::FlexBox& parent, node &n, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes);
+        void processChildren(juce::FlexBox& parent, const std::vector<node>& children, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes);
         float getLabelHeight(const std::string& text);
 };
