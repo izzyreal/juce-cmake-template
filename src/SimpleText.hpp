@@ -4,8 +4,8 @@
 #include <string>
 #include <functional>
 
-const float BASE_FONT_SIZE = 5.f;
-const float LINE_SIZE = BASE_FONT_SIZE * 0.3;
+const float BASE_FONT_SIZE = 4.f;
+const float LINE_SIZE = BASE_FONT_SIZE * 0.3f;
 
 class SimpleText : public juce::Component {
     public:

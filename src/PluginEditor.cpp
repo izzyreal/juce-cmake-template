@@ -27,6 +27,7 @@ PluginEditor::~PluginEditor()
 
 void PluginEditor::resized()
 {
+    printf("Resized to %i, %i\n", getWidth(), getHeight());
     view->setBounds(0, 0, getWidth(), getHeight());
 }
 
