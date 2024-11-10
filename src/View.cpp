@@ -8,20 +8,25 @@
 
 #include <fstream>
 
+#include <iterator>
+
 using json = nlohmann::json;
 
 static void from_json(const json& j, node& n)
 {
-    if (j.contains("name"))        j.at("name").get_to(n.name);
-    if (j.contains("type"))        j.at("type").get_to(n.node_type);
-    if (j.contains("svg"))         j.at("svg").get_to(n.svg);
-    if (j.contains("children"))    j.at("children").get_to(n.children);
-    if (j.contains("margin"))      j.at("margin").get_to(n.margin); else n.margin = 0.f;
-    if (j.contains("label"))       j.at("label").get_to(n.label);
-    if (j.contains("label_style")) j.at("label_style").get_to(n.label_style);
-    if (j.contains("direction"))   j.at("direction").get_to(n.direction);
-    if (j.contains("flex_grow"))   j.at("flex_grow").get_to(n.flex_grow); else n.flex_grow = 0.f;
-    if (j.contains("align_items")) j.at("align_items").get_to(n.align_items);
+    if (j.contains("name"))             j.at("name").get_to(n.name);
+    if (j.contains("type"))             j.at("type").get_to(n.node_type);
+    if (j.contains("svg"))              j.at("svg").get_to(n.svg);
+    if (j.contains("children"))         j.at("children").get_to(n.children);
+    if (j.contains("margin"))           j.at("margin").get_to(n.margin); else n.margin = 0.f;
+    if (j.contains("label"))            j.at("label").get_to(n.label);
+    if (j.contains("label_style"))      j.at("label_style").get_to(n.label_style);
+    if (j.contains("direction"))        j.at("direction").get_to(n.direction);
+    if (j.contains("flex_grow"))        j.at("flex_grow").get_to(n.flex_grow); else n.flex_grow = 0.f;
+    if (j.contains("align_items"))      j.at("align_items").get_to(n.align_items);
+    if (j.contains("row_fractions"))    j.at("row_fractions").get_to(n.row_fractions);
+    if (j.contains("column_fractions")) j.at("column_fractions").get_to(n.column_fractions);
+    if (j.contains("area"))             j.at("area").get_to(n.area);
 
     if (j.contains("include"))
     {
@@ -38,6 +43,14 @@ static void from_json(const json& j, node& n)
     if (!n.label.empty())       printf("-       label: %s\n", n.label.c_str());
     if (!n.label_style.empty()) printf("- label_style: %s\n", n.label_style.c_str());
     if (n.flex_grow != 0.f)     printf("-   flex_grow: %f\n", n.flex_grow);
+    if (!n.row_fractions.empty())
+    {
+        printf("- row_fractions:");
+        for (auto& f : n.row_fractions)
+            printf(" %i ", f);
+        printf("\n");
+    }
+
     printf("=========================\n");
 }
 
@@ -163,10 +176,10 @@ void View::processFlexBox(
     parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(1.f).withFlex(flexGrow));
 
     flexBoxes.push_back(std::move(childFlexBox));
-    processChildren(*flexBoxes.back(), children, flexBoxes);
+    processFlexBoxChildren(*flexBoxes.back(), children, flexBoxes);
 }
 
-void View::processChildren(
+void View::processFlexBoxChildren(
         juce::FlexBox& parent,
         const std::vector<node>& children,
         std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes)
@@ -206,15 +219,53 @@ void View::processChildren(
     }
 }
 
+void View::processGridChildren(
+        juce::Grid& parent,
+        const std::vector<node>& children)
+{
+    for (auto& c : children)
+    {
+        if (c.node_type == "grid")
+        {
+            processGridChildren(parent, c.children);
+            continue;
+        }
+
+        if (c.svg_component != nullptr)
+        {
+            parent.items.add(juce::GridItem(c.svg_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
+        }
+    }
+}
+
 void View::resized()
 {
     std::vector<std::unique_ptr<juce::FlexBox>> flexBoxes;
 
+    /*
     juce::FlexBox rootFlexBox;
     rootFlexBox.flexDirection = juce::FlexBox::Direction::column;
 
-    processChildren(rootFlexBox, view_root.children, flexBoxes);
+    processFlexBoxChildren(rootFlexBox, view_root.children, flexBoxes);
 
     rootFlexBox.performLayout(getLocalBounds());
+    */
+
+    juce::Grid rootGrid;
+
+
+    juce::Array<juce::Grid::TrackInfo> rowTrackInfos;
+    for (auto& f : view_root.children[0].row_fractions)
+        rowTrackInfos.add(juce::Grid::TrackInfo(juce::Grid::Fr(f)));
+
+    juce::Array<juce::Grid::TrackInfo> columnTrackInfos;
+    for (auto& f : view_root.children[0].column_fractions)
+        columnTrackInfos.add(juce::Grid::TrackInfo(juce::Grid::Fr(f)));
+
+    rootGrid.templateRows = rowTrackInfos;
+    rootGrid.templateColumns = columnTrackInfos;
+    processGridChildren(rootGrid, view_root.children);
+
+    rootGrid.performLayout(getLocalBounds());
 }
 

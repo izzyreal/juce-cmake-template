@@ -15,6 +15,13 @@ struct node {
     float flex_grow;
     std::string align_items;
 
+    // grid
+    std::vector<uint8_t> row_fractions;
+    std::vector<uint8_t> column_fractions;
+
+    // grid leaf item
+    std::vector<uint8_t> area;
+
     juce::Component* svg_component;
     juce::Component* label_component;
 };
@@ -53,6 +60,9 @@ class View : public juce::Component {
                 juce::Component* svgComponent);
 
         void addViewNodesAsJuceComponents(node& n);
-        void processChildren(juce::FlexBox& parent, const std::vector<node>& children, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes);
+        void processFlexBoxChildren(juce::FlexBox& parent, const std::vector<node>& children, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes);
+        void processGridChildren(
+                juce::Grid& parent,
+                const std::vector<node>& children);
         float getLabelHeight(const std::string& text);
 };
