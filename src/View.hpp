@@ -1,30 +1,8 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
-#include <vector>
+#include "Node.hpp"
+
 #include <functional>
-
-struct node {
-    std::string name;
-    std::string node_type;
-    std::string svg;
-    std::vector<node> children;
-    float margin;
-    std::string label;
-    std::string label_style;
-    std::string direction;
-    float flex_grow;
-    std::string align_items;
-
-    // grid
-    std::vector<uint8_t> row_fractions;
-    std::vector<uint8_t> column_fractions;
-
-    // grid leaf item
-    std::vector<uint8_t> area;
-
-    juce::Component* svg_component;
-    juce::Component* label_component;
-};
 
 class View : public juce::Component {
 
@@ -40,29 +18,4 @@ class View : public juce::Component {
         std::vector<juce::Component*> components;
         node view_root;
         const std::function<float()> getScale;
-
-        void processFlexBox(
-                juce::FlexBox& parent,
-                const std::vector<node>& children,
-                std::vector<std::unique_ptr<juce::FlexBox>>& flexBoxes,
-                const std::string& alignItems,
-                const std::string& direction,
-                const float flexGrow);
-
-        void processSvgWithLabel(
-                juce::FlexBox& parent,
-                std::vector<std::unique_ptr<juce::FlexBox>>& flexBoxes,
-                const float minWidth,
-                const float minHeight,
-                const float flexGrow,
-                const std::string& labelText,
-                juce::Component* labelComponent,
-                juce::Component* svgComponent);
-
-        void addViewNodesAsJuceComponents(node& n);
-        void processFlexBoxChildren(juce::FlexBox& parent, const std::vector<node>& children, std::vector<std::unique_ptr<juce::FlexBox>> &flexBoxes);
-        void processGridChildren(
-                juce::Grid& parent,
-                const std::vector<node>& children);
-        float getLabelHeight(const std::string& text);
 };
