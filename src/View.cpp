@@ -59,7 +59,7 @@ View::View(const std::function<float()>& getScaleToUse) : getScale(getScaleToUse
 
     view_root = data.template get<node>();
 
-    ViewUtil::createComponents(view_root, components, this, getScale);
+    ViewUtil::createComponent(view_root, components, this, getScale);
 }
 
 View::~View()

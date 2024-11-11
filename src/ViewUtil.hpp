@@ -12,5 +12,11 @@ class ViewUtil
                 std::vector<juce::Component*>& components,
                 juce::Component* parent,
                 const std::function<float()>& getScale);
+
+        static void createComponent(
+                node &n,
+                std::vector<juce::Component*>& components,
+                juce::Component* parent,
+                const std::function<float()>& getScale);
 };
 
