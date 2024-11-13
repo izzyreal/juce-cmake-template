@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.13)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include(FetchContent)
 
+set(FETCHCONTENT_UPDATES_DISCONNECTED ON)
+
 project(plugin VERSION 0.0.1)
 
 #add_definitions(-DJUCE_ENABLE_REPAINT_DEBUGGING)
