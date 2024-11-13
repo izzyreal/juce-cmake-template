@@ -73,7 +73,7 @@ static void processChildren(
         }
         else if (c.node_type == "flex_box")
         {
-            parent.items.add(juce::FlexItem(*c.flex_box_wrapper_component));
+            parent.items.add(juce::FlexItem(*c.flex_box_wrapper_component).withFlex(flexGrow));
             continue;
         }
 
