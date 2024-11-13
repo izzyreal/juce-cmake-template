@@ -19,6 +19,12 @@ void ViewUtil::createComponent(
         juce::Component* parent,
         const std::function<float()>& getScale)
 {
+    n.svg_component = nullptr;
+    n.svg_with_label_grid_component = nullptr;
+    n.label_component = nullptr;
+    n.flex_box_wrapper_component = nullptr;
+    n.grid_wrapper_component = nullptr;
+
     if (n.node_type == "grid")
     {
         auto gridWrapper = new GridWrapper(n);
@@ -40,14 +46,15 @@ void ViewUtil::createComponent(
 
     if (n.svg.empty())
     {
-        n.svg_component = nullptr;
+        return;
     }
-    else if (n.label.empty())
+
+    if (n.label.empty())
     {
         components.emplace_back(new SvgComponent(n.svg));
         parent->addAndMakeVisible(components.back());
         n.svg_component = components.back();
-        n.label_component = nullptr;
+        return;
     }
 
     auto simpleText = new SimpleText(getScale, n.label, n.label_style);

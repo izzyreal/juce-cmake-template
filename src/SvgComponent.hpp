@@ -37,14 +37,13 @@ class SvgComponent : public juce::Component
         void paint(juce::Graphics& g) override
         {
             //g.fillAll(randomColor);
-            if (svgDrawable != nullptr)
-            {
-                svgDrawable->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 1.0f);
-            }
-            else
+            if (svgDrawable == nullptr)
             {
                 g.fillAll(juce::Colours::red);
+                return;
             }
+
+            svgDrawable->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 1.0f);
         }
 
     private:
