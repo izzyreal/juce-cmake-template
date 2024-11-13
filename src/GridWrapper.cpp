@@ -2,6 +2,8 @@
 
 #include "FlexBoxWrapper.hpp"
 
+#include <cassert>
+
 GridWrapper::GridWrapper(struct node &nodeToUse) : node(nodeToUse)
 {
     printf("GridWrapper for %s\n", node.name.c_str());
@@ -30,9 +32,17 @@ static void processChildren(
             continue;
         }
 
+        if (c.svg_with_label_grid_component != nullptr)
+        {
+            parent.items.add(juce::GridItem(c.svg_with_label_grid_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
+            continue;
+        }
+
         if (c.svg_component != nullptr)
         {
-            printf("Adding svg component to grid\n");
+           // The case where there's both an SVG, as well as a label, should be handled by svg_with_label_grid_component.
+           // Hence we make sure there's no label Component associated with this node.
+            assert(c.label_component == nullptr);
             parent.items.add(juce::GridItem(c.svg_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
         }
     }

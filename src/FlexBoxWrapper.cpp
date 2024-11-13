@@ -3,6 +3,8 @@
 #include "GridWrapper.hpp"
 #include "SvgComponent.hpp"
 #include "SimpleText.hpp"
+#include "ViewUtil.hpp"
+
 #include <cassert>
 
 FlexBoxWrapper::FlexBoxWrapper(struct node &nodeToUse, const std::function<float()>& getScaleToUse)
@@ -15,13 +17,6 @@ FlexBoxWrapper::~FlexBoxWrapper()
 {
     for (auto c : components)
         delete c;
-}
-
-static float getLabelHeight(const std::string& text, const std::function<float()>& getScale)
-{
-    const auto newlineCount = (float) std::count(text.begin(), text.end(), '\n');
-
-    return ((BASE_FONT_SIZE * (newlineCount + 1)) + (LINE_SIZE * newlineCount)) * getScale();
 }
 
 static void processSvgWithLabel(
@@ -41,7 +36,7 @@ static void processSvgWithLabel(
 
     const auto childFlexBoxMinWidth = std::max<float>((float) min_width_label, minWidth);
 
-    const auto labelHeight = getLabelHeight(labelText, getScale);
+    const auto labelHeight = ViewUtil::getLabelHeight(labelText, getScale);
 
     parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + labelHeight).withFlex(flexGrow));
     flexBoxes.push_back(std::move(childFlexBox));

@@ -4,52 +4,78 @@
 #include "FlexBoxWrapper.hpp"
 #include "SvgComponent.hpp"
 #include "SimpleText.hpp"
+#include "SvgWithLabelGrid.hpp"
+
+float ViewUtil::getLabelHeight(const std::string& text, const std::function<float()>& getScale)
+{
+    const auto newlineCount = (float) std::count(text.begin(), text.end(), '\n');
+
+    return ((BASE_FONT_SIZE * (newlineCount + 1)) + (LINE_SIZE * newlineCount)) * getScale();
+}
 
 void ViewUtil::createComponent(
-        node &c,
+        node &n,
         std::vector<juce::Component*>& components,
         juce::Component* parent,
         const std::function<float()>& getScale)
 {
-    if (c.node_type == "grid")
+    if (n.node_type == "grid")
     {
-        auto gridWrapper = new GridWrapper(c);
-        createComponents(c, gridWrapper->components, gridWrapper, getScale);
+        auto gridWrapper = new GridWrapper(n);
+        createComponents(n, gridWrapper->components, gridWrapper, getScale);
         components.emplace_back(gridWrapper);
         parent->addAndMakeVisible(components.back());
-        c.grid_wrapper_component = components.back();
+        n.grid_wrapper_component = components.back();
         return;
     }
-    else if (c.node_type == "flex_box")
+    else if (n.node_type == "flex_box")
     {
-        auto flexBoxWrapper = new FlexBoxWrapper(c, getScale);
-        createComponents(c, flexBoxWrapper->components, flexBoxWrapper, getScale);
+        auto flexBoxWrapper = new FlexBoxWrapper(n, getScale);
+        createComponents(n, flexBoxWrapper->components, flexBoxWrapper, getScale);
         components.emplace_back(flexBoxWrapper);
         parent->addAndMakeVisible(components.back());
-        c.flex_box_wrapper_component = components.back();
+        n.flex_box_wrapper_component = components.back();
         return;
     }
 
-    if (c.svg.empty())
+    if (n.svg.empty())
     {
-        c.svg_component = nullptr;
+        n.svg_component = nullptr;
     }
-    else if (!c.svg.empty())
+    else if (n.label.empty())
     {
-        components.emplace_back(new SvgComponent(c.svg));
+        components.emplace_back(new SvgComponent(n.svg));
         parent->addAndMakeVisible(components.back());
-        c.svg_component = components.back();
+        n.svg_component = components.back();
+        n.label_component = nullptr;
     }
 
-    if (c.label.empty())
+    auto simpleText = new SimpleText(getScale, n.label, n.label_style);
+    auto svgComponent = new SvgComponent(n.svg);
+
+    n.svg_component = svgComponent;
+    n.label_component = simpleText;
+
+    if (dynamic_cast<GridWrapper*>(parent))
     {
-        c.label_component = nullptr;
+        auto svgWithLabelGrid = new SvgWithLabelGrid(n, getScale);
+        svgWithLabelGrid->components.push_back(simpleText);
+        svgWithLabelGrid->addAndMakeVisible(simpleText);
+
+        svgWithLabelGrid->components.push_back(svgComponent);
+
+        components.push_back(svgWithLabelGrid);
+
+        parent->addAndMakeVisible(svgWithLabelGrid);
+        n.svg_with_label_grid_component = svgWithLabelGrid;
     }
-    else
+    else /* if parent is FlexBoxWrapper */
     {
-        components.emplace_back(new SimpleText(getScale, c.label, c.label_style));
-        parent->addAndMakeVisible(components.back());
-        c.label_component = components.back();
+        components.push_back(svgComponent);
+        parent->addAndMakeVisible(svgComponent);
+
+        components.push_back(simpleText);
+        parent->addAndMakeVisible(simpleText);
     }
 }
 

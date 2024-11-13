@@ -7,6 +7,9 @@
 class ViewUtil
 {
     public:
+        static float getLabelHeight(const std::string& text,
+                const std::function<float()>& getScale);
+
         static void createComponents(
                 node &n,
                 std::vector<juce::Component*>& components,
