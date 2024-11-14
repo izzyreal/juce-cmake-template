@@ -36,6 +36,16 @@ static void from_json(const json& j, node& n)
         if (j.contains("area"))             j.at("area").get_to(n.area);
     }
 
+
+    if (!n.area.empty())
+    {
+        // JUCE's withArea(rowStart, columnStart, rowEnd, columnEnd) API expects exclusive
+        // rowEnd and columnEnd arguments. I find that unintuitive, so in the layouts I
+        // specify inclusive end arguments, and do a fix-up here.
+        n.area[2] += 1;
+        n.area[3] += 1;
+    }
+
     printf("=== Deserialized node ===\n");
     if (!n.name.empty())        printf("-        name: %s\n", n.name.c_str());
     if (!n.svg.empty())         printf("-         svg: %s\n", n.svg.c_str());
