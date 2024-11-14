@@ -44,10 +44,19 @@ static void from_json(const json& j, node& n)
     if (!n.label.empty())       printf("-       label: %s\n", n.label.c_str());
     if (!n.label_style.empty()) printf("- label_style: %s\n", n.label_style.c_str());
     if (n.flex_grow != 0.f)     printf("-   flex_grow: %f\n", n.flex_grow);
+
     if (!n.row_fractions.empty())
     {
         printf("- row_fractions:");
         for (auto& f : n.row_fractions)
+            printf(" %i ", f);
+        printf("\n");
+    }
+
+    if (!n.area.empty())
+    {
+        printf("-          area:");
+        for (auto& f : n.area)
             printf(" %i ", f);
         printf("\n");
     }
