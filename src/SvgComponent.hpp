@@ -43,7 +43,7 @@ class SvgComponent : public juce::Component
                 return;
             }
 
-            svgDrawable->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 1.0f);
+            svgDrawable->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::yBottom, 1.0f);
         }
 
     private:
