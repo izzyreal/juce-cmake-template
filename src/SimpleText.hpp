@@ -16,7 +16,7 @@ class SimpleText : public juce::Component {
             : text(_text), label_style(_label_style), getScale(getScaleToUse)
         {}
 
-       void paint(juce::Graphics& g) override
+        void paint(juce::Graphics& g) override
         {
             g.setFont(getFont());
 
@@ -30,6 +30,12 @@ class SimpleText : public juce::Component {
 
             g.setColour(juce::Colours::black);
 
+            const auto newlineCount = (float) std::count(text.begin(), text.end(), '\n');
+
+            const auto labelHeight = ((BASE_FONT_SIZE * (newlineCount + 1)) + (LINE_SIZE * newlineCount)) * getScale();
+
+            const auto yOffset = (getHeight() - labelHeight) / 2;
+
             int row = 0;
             std::string buf;
             bool should_draw = false;
@@ -38,7 +44,7 @@ class SimpleText : public juce::Component {
             {
                 if (c == '\n')
                 {
-                    g.drawText(buf, 0, row * (BASE_FONT_SIZE + LINE_SIZE) * getScale(), getWidth(), getHeight(), juce::Justification::centredTop);
+                    g.drawText(buf, 0, yOffset + row * (BASE_FONT_SIZE + LINE_SIZE) * getScale(), getWidth(), getHeight(), juce::Justification::centredTop);
                     row++;
                     should_draw = false;
                     buf.clear();
@@ -50,7 +56,7 @@ class SimpleText : public juce::Component {
 
             if (should_draw && !buf.empty())
             {
-                g.drawText(buf, 0, row * (BASE_FONT_SIZE + LINE_SIZE) * getScale(), getWidth(), getHeight(), juce::Justification::centredTop);
+                g.drawText(buf, 0, yOffset + row * (BASE_FONT_SIZE + LINE_SIZE) * getScale(), getWidth(), getHeight(), juce::Justification::centredTop);
             }
         }
 
