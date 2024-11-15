@@ -44,12 +44,7 @@ void ViewUtil::createComponent(
         return;
     }
 
-    if (n.svg.empty())
-    {
-        return;
-    }
-
-    if (n.label.empty())
+    if (!n.svg.empty() && n.label.empty())
     {
         components.emplace_back(new SvgComponent(n.svg));
         parent->addAndMakeVisible(components.back());
@@ -57,32 +52,46 @@ void ViewUtil::createComponent(
         return;
     }
 
-    auto simpleText = new SimpleText(getScale, n.label, n.label_style);
-    auto svgComponent = new SvgComponent(n.svg);
-
-    n.svg_component = svgComponent;
-    n.label_component = simpleText;
-
-    if (dynamic_cast<GridWrapper*>(parent))
+    if (!n.svg.empty() && !n.label.empty())
     {
-        auto svgWithLabelGrid = new SvgWithLabelGrid(n, getScale);
-        svgWithLabelGrid->components.push_back(simpleText);
-        svgWithLabelGrid->addAndMakeVisible(simpleText);
 
-        svgWithLabelGrid->components.push_back(svgComponent);
+        auto simpleText = new SimpleText(getScale, n.label, n.label_style);
+        auto svgComponent = new SvgComponent(n.svg);
 
-        components.push_back(svgWithLabelGrid);
+        n.svg_component = svgComponent;
+        n.label_component = simpleText;
 
-        parent->addAndMakeVisible(svgWithLabelGrid);
-        n.svg_with_label_grid_component = svgWithLabelGrid;
+        if (dynamic_cast<GridWrapper*>(parent))
+        {
+            auto svgWithLabelGrid = new SvgWithLabelGrid(n, getScale);
+            svgWithLabelGrid->components.push_back(simpleText);
+            svgWithLabelGrid->addAndMakeVisible(simpleText);
+
+            svgWithLabelGrid->components.push_back(svgComponent);
+
+            components.push_back(svgWithLabelGrid);
+
+            parent->addAndMakeVisible(svgWithLabelGrid);
+            n.svg_with_label_grid_component = svgWithLabelGrid;
+        }
+        else /* if parent is FlexBoxWrapper */
+        {
+            components.push_back(svgComponent);
+            parent->addAndMakeVisible(svgComponent);
+
+            components.push_back(simpleText);
+            parent->addAndMakeVisible(simpleText);
+        }
+        return;
     }
-    else /* if parent is FlexBoxWrapper */
-    {
-        components.push_back(svgComponent);
-        parent->addAndMakeVisible(svgComponent);
 
+    if (!n.label.empty())
+    {
+        auto simpleText = new SimpleText(getScale, n.label, n.label_style);
+        n.label_component = simpleText;
         components.push_back(simpleText);
         parent->addAndMakeVisible(simpleText);
+        return;
     }
 }
 

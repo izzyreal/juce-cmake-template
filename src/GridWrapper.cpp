@@ -44,6 +44,12 @@ static void processChildren(
            // Hence we make sure there's no label Component associated with this node.
             assert(c.label_component == nullptr);
             parent.items.add(juce::GridItem(c.svg_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
+            continue;
+        }
+
+        if (c.label_component != nullptr)
+        {
+            parent.items.add(juce::GridItem(c.label_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
         }
     }
 }

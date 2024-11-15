@@ -77,22 +77,35 @@ static void processChildren(
             continue;
         }
 
-        if (c.svg_component == nullptr)
+        if (c.svg_component == nullptr && c.label_component == nullptr)
         {
             continue;
         }
 
-        const auto drawable_bounds = dynamic_cast<SvgComponent*>(c.svg_component)->getDrawableBounds();
-        const auto minWidth = drawable_bounds.getWidth() * getScale();
-        const auto minHeight = drawable_bounds.getHeight() * getScale();
-
-        if (c.label.empty())
+        if (c.svg_component != nullptr)
         {
-            parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight).withFlex(flexGrow));
-            continue;
+
+            const auto drawable_bounds = dynamic_cast<SvgComponent*>(c.svg_component)->getDrawableBounds();
+            const auto minWidth = drawable_bounds.getWidth() * getScale();
+            const auto minHeight = drawable_bounds.getHeight() * getScale();
+
+            if (c.label_component == nullptr)
+            {
+                parent.items.add(juce::FlexItem(*c.svg_component).withMinWidth(minWidth).withMinHeight(minHeight).withFlex(flexGrow));
+                continue;
+            }
+
+            if (c.label_component != nullptr && c.svg_component != nullptr)
+            {
+                processSvgWithLabel(parent, flexBoxes, minWidth, minHeight, flexGrow, c.label, c.label_component, c.svg_component, getScale);
+                continue;
+            }
         }
 
-        processSvgWithLabel(parent, flexBoxes, minWidth, minHeight, flexGrow, c.label, c.label_component, c.svg_component, getScale);
+        if (c.label_component != nullptr)
+        {
+            parent.items.add(juce::FlexItem(*c.label_component).withFlex(flexGrow));
+        }
     }
 }
 
