@@ -5,6 +5,7 @@
 #include "SvgComponent.hpp"
 #include "SimpleText.hpp"
 #include "SvgWithLabelGrid.hpp"
+#include "LineFlankedLabel.hpp"
 
 float ViewUtil::getLabelHeight(const std::string& text, const std::function<float()>& getScale)
 {
@@ -41,6 +42,13 @@ void ViewUtil::createComponent(
         components.emplace_back(flexBoxWrapper);
         parent->addAndMakeVisible(components.back());
         n.flex_box_wrapper_component = components.back();
+        return;
+    }
+    else if (n.node_type == "line_flanked_label")
+    {
+        components.emplace_back(new LineFlankedLabel(n.label, getScale));
+        parent->addAndMakeVisible(components.back());
+        n.line_flanked_label_component = components.back();
         return;
     }
 

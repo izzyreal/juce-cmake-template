@@ -23,9 +23,10 @@ struct node {
     // grid leaf item
     std::vector<uint8_t> area;
 
-    juce::Component* svg_component;
-    juce::Component* label_component;
-    juce::Component* grid_wrapper_component;
-    juce::Component* flex_box_wrapper_component;
-    juce::Component* svg_with_label_grid_component;
+    juce::Component *svg_component;
+    juce::Component *label_component;
+    juce::Component *grid_wrapper_component;
+    juce::Component *flex_box_wrapper_component;
+    juce::Component *svg_with_label_grid_component;
+    juce::Component *line_flanked_label_component;
 };

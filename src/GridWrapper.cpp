@@ -31,6 +31,11 @@ static void processChildren(
             parent.items.add(juce::GridItem(c.flex_box_wrapper_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
             continue;
         }
+        else if (c.node_type == "line_flanked_label")
+        {
+            parent.items.add(juce::GridItem(c.line_flanked_label_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
+            continue;
+        }
 
         if (c.svg_with_label_grid_component != nullptr)
         {
