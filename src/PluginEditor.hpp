@@ -18,7 +18,7 @@ private:
     melatonin::Inspector* inspector = nullptr;
     PluginProcessor &pluginProcessor;
     View* view = nullptr;
-    const float initial_width =  166.f*1.3f;
+    const float initial_width =  166.f*1.3f*2;
     const float initial_height = 253.f*1.3f;
     const float initial_scale = 2.4f;
 };
