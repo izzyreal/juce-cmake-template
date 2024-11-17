@@ -7,16 +7,16 @@
 
 class RoundedRectangleLabel : public LabelComponent {
     public:
-        RoundedRectangleLabel(const std::function<float()>& getScaleToUse, std::string textToUse)
-            : getScale(getScaleToUse)
+        RoundedRectangleLabel(const std::function<float()>& getScaleToUse, std::string textToUse, juce::Colour bgColourToUse, juce::Colour fgColourToUse)
+            : getScale(getScaleToUse), bgColour(bgColourToUse)
         {
-            simpleLabel = new SimpleLabel(getScaleToUse, textToUse, Constants::chassisColour);
+            simpleLabel = new SimpleLabel(getScaleToUse, textToUse, fgColourToUse);
             addAndMakeVisible(simpleLabel);
         }
 
         float getRequiredWidth() override
         {
-            return simpleLabel->getRequiredWidth() + 10.f;
+            return simpleLabel->getRequiredWidth() + 6.f;
         }
 
         float getRequiredHeight() override
@@ -34,9 +34,9 @@ class RoundedRectangleLabel : public LabelComponent {
         void paint(juce::Graphics &g) override
         {
             //g.fillAll(juce::Colours::yellow);
-            g.setColour(Constants::darkLabelColour);
+            g.setColour(bgColour);
             const auto radius = 1.5f * getScale();
-            const auto margin = 5.f;
+            const auto margin = 3.f;
             const auto requiredHeight = simpleLabel->getRequiredHeight() + margin;
             auto backgroundRect = getLocalBounds();
             backgroundRect.reduce(0.f, (float) (getHeight()) - requiredHeight);
@@ -54,4 +54,5 @@ class RoundedRectangleLabel : public LabelComponent {
     private:
         SimpleLabel* simpleLabel = nullptr;
         const std::function<float()> &getScale;
+        const juce::Colour bgColour;
 };

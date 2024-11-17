@@ -116,9 +116,13 @@ void ViewUtil::createComponent(
     {
         LabelComponent* labelComponent = nullptr;
 
-        if (n.label_style == "rounded")
+        if (n.label_style == "chassis_background")
         {
-            labelComponent = new RoundedRectangleLabel(getScale, n.label);
+            labelComponent = new RoundedRectangleLabel(getScale, n.label, Constants::chassisColour, Constants::darkLabelColour);
+        }
+        else if (n.label_style == "rounded")
+        {
+            labelComponent = new RoundedRectangleLabel(getScale, n.label, Constants::darkLabelColour, Constants::chassisColour);
         }
         else
         {
