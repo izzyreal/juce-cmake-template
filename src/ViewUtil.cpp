@@ -7,6 +7,7 @@
 #include "LineFlankedLabel.hpp"
 #include "FunctionKeyLabel.hpp"
 #include "RoundedRectangleLabel.hpp"
+#include "JOrLShape.hpp"
 #include "Constants.hpp"
 
 float ViewUtil::getLabelHeight(const std::string& text, const std::function<float()>& getScale)
@@ -27,6 +28,8 @@ void ViewUtil::createComponent(
     n.label_component = nullptr;
     n.flex_box_wrapper_component = nullptr;
     n.grid_wrapper_component = nullptr;
+    n.line_flanked_label_component = nullptr;
+    n.j_or_l_shape_component = nullptr;
 
     if (n.node_type == "grid")
     {
@@ -51,6 +54,13 @@ void ViewUtil::createComponent(
         components.emplace_back(new LineFlankedLabel(n.label, getScale));
         parent->addAndMakeVisible(components.back());
         n.line_flanked_label_component = components.back();
+        return;
+    }
+    else if (n.node_type == "j_shape" || n.node_type == "l_shape")
+    {
+        components.emplace_back(new JOrLShape(n.node_type == "j_shape" ? JOrLShape::Shape::J : JOrLShape::Shape::L));
+        parent->addAndMakeVisible(components.back());
+        n.j_or_l_shape_component = components.back();
         return;
     }
 

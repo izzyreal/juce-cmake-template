@@ -29,4 +29,5 @@ struct node {
     juce::Component *flex_box_wrapper_component;
     juce::Component *svg_with_label_grid_component;
     juce::Component *line_flanked_label_component;
+    juce::Component *j_or_l_shape_component;
 };
