@@ -2,6 +2,8 @@
 
 #include "FlexBoxWrapper.hpp"
 
+#include "LabelComponent.hpp"
+
 #include <cassert>
 
 GridWrapper::GridWrapper(struct node &nodeToUse) : node(nodeToUse)
@@ -54,8 +56,9 @@ static void processChildren(
 
         if (c.label_component != nullptr)
         {
-            const auto margin = c.label_style == "rounded" ? 4.f : 0.f;
-            parent.items.add(juce::GridItem(c.label_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]).withMargin(juce::GridItem::Margin(margin)));
+            const auto width = dynamic_cast<LabelComponent*>(c.label_component)->getRequiredWidth();
+            const auto item = juce::GridItem(c.label_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]);
+            parent.items.add(item.withWidth(width));
         }
     }
 }
@@ -64,6 +67,7 @@ void GridWrapper::resized()
 {
     printf("GridWrapper for %s resized to %i, %i\n", node.name.c_str(), getWidth(), getHeight());
     juce::Grid grid;
+    grid.justifyItems = juce::Grid::JustifyItems::center;
 
     juce::Array<juce::Grid::TrackInfo> rowTrackInfos;
     juce::Array<juce::Grid::TrackInfo> columnTrackInfos;

@@ -2,6 +2,7 @@
 
 #include "SimpleLabel.hpp"
 #include "Constants.hpp"
+#include "juce_graphics/juce_graphics.h"
 
 class LineFlankedLabel : public juce::Component {
     public:
@@ -22,13 +23,13 @@ class LineFlankedLabel : public juce::Component {
             juce::FlexBox fb;
             fb.alignItems = juce::FlexBox::AlignItems::center;
             const auto requiredHeight = simpleLabel->getRequiredHeight();
-            printf("requiredHeight: %f\n", requiredHeight);
             fb.items.add(juce::FlexItem(*simpleLabel).withFlex(1.f).withWidth(simpleLabel->getRequiredWidth()).withHeight(requiredHeight));
             fb.performLayout(getLocalBounds());
         }
 
         void paint(juce::Graphics& g) override
         {
+            //g.fillAll(juce::Colours::yellowgreen);
             const auto textWidth = simpleLabel->getRequiredWidth();
             const auto lineInterruptionStartX = (getWidth() - textWidth) / 2;
             const auto lineInterruptionEndX = getWidth() - lineInterruptionStartX;
