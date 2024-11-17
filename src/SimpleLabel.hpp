@@ -3,53 +3,39 @@
 #include "juce_graphics/juce_graphics.h"
 #include <juce_gui_basics/juce_gui_basics.h>
 
+#include "LabelComponent.hpp"
+#include "Constants.hpp"
+
 #include <string>
 #include <functional>
 #include <fstream>
 
-const float BASE_FONT_SIZE = 5.0f;
-const float LINE_SIZE = BASE_FONT_SIZE * 0.3f;
-
-class SimpleText : public juce::Component {
+class SimpleLabel : public LabelComponent {
     public:
-        SimpleText(
+        SimpleLabel(
                 const std::function<float()>& getScaleToUse,
-                const std::string _text,
-                const std::string _label_style)
-            : text(_text), label_style(_label_style), getScale(getScaleToUse)
+                const std::string textToUse,
+                const juce::Colour colourToUse)
+            : text(textToUse), getScale(getScaleToUse), colour(colourToUse)
         {}
 
         void paint(juce::Graphics& g) override
         {
+            //g.fillAll(juce::Colours::yellowgreen);
             g.setFont(getFont());
-
-            if (label_style == "top_with_background")
-            {
-                auto background_rect = juce::Rectangle((getWidth() - getTotalWidth()) / 2.f, 0.f, getTotalWidth(), (float) getHeight());
-                juce::Colour label_background = juce::Colour::fromRGB(139, 151, 163);
-                g.setColour(label_background);
-                g.fillRect(background_rect);
-            }
-
-            g.setColour(juce::Colours::black);
-
-            const auto newlineCount = (float) std::count(text.begin(), text.end(), '\n');
-
-            const auto labelHeight = ((BASE_FONT_SIZE * (newlineCount + 1)) + (LINE_SIZE * newlineCount)) * getScale();
-
-            const auto yOffset = (getHeight() - labelHeight) / 2;
 
             int row = 0;
             std::string buf;
             bool should_draw = false;
 
-            g.setColour(juce::Colour::fromRGB(70, 70, 70));
+            g.setColour(colour);
+            const auto yOffset = (getHeight() - getRequiredHeight()) / 2;
 
             for (auto c : text) 
             {
                 if (c == '\n')
                 {
-                    g.drawText(buf, 0, yOffset + row * (BASE_FONT_SIZE + LINE_SIZE) * getScale(), getWidth(), getHeight(), juce::Justification::centredTop);
+                    g.drawText(buf, 0, yOffset + row * (Constants::BASE_FONT_SIZE + Constants::LINE_SIZE) * getScale(), getWidth(), getHeight(), juce::Justification::centredTop);
                     row++;
                     should_draw = false;
                     buf.clear();
@@ -61,11 +47,11 @@ class SimpleText : public juce::Component {
 
             if (should_draw && !buf.empty())
             {
-                g.drawText(buf, 0, yOffset + row * (BASE_FONT_SIZE + LINE_SIZE) * getScale(), getWidth(), getHeight(), juce::Justification::centredTop);
+                g.drawText(buf, 0, yOffset + row * (Constants::BASE_FONT_SIZE + Constants::LINE_SIZE) * getScale(), getWidth(), getHeight(), juce::Justification::centredTop);
             }
         }
 
-        float getTotalWidth()
+        float getRequiredWidth() override
         {
             int upper = 0;
 
@@ -91,14 +77,15 @@ class SimpleText : public juce::Component {
                 upper = std::max<int>(getFont().getStringWidth(buf), upper);
             }
 
-            return ((float) upper + (getLabelMargin() * 2));
+            return ((float) upper );
         }
 
-    private:
-        std::string text;
-        std::string label_style;
-        const std::function<float()> getScale;
-        juce::Font font;
+        float getRequiredHeight() override
+        {
+            const auto newlineCount = (float) std::count(text.begin(), text.end(), '\n');
+            const auto labelHeight = ((Constants::BASE_FONT_SIZE * (newlineCount + 1)) + (Constants::LINE_SIZE * newlineCount)) * getScale();
+            return labelHeight;
+        }
 
         juce::Font getFont()
         {
@@ -109,16 +96,16 @@ class SimpleText : public juce::Component {
                 std::vector<char> fontData(std::istreambuf_iterator<char>(file), {});
                 font = juce::Font(juce::Typeface::createSystemTypefaceFor(fontData.data(), fontData.size()));
             }
-            
-            font.setHeight(BASE_FONT_SIZE * getScale());
+
+            font.setHeight(Constants::BASE_FONT_SIZE * getScale());
 
             return font;
         }
 
-        float getLabelMargin()
-        {
-            return getFont().getHeight() * 0.6f;
-        }
-
+    private:
+        std::string text;
+        const std::function<float()> getScale;
+        juce::Font font;
+        juce::Colour colour;
 };
 

@@ -1,29 +1,35 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 
-#include "SimpleText.hpp"
+#include "SimpleLabel.hpp"
+#include "Constants.hpp"
 
 class LineFlankedLabel : public juce::Component {
     public:
         LineFlankedLabel(const std::string &textToUse, const std::function<float()> &getScaleToUse)
             : text(textToUse), getScale(getScaleToUse)
         {
-            simpleText = new SimpleText(getScaleToUse, textToUse, "");
-            addAndMakeVisible(simpleText);
+            simpleLabel = new SimpleLabel(getScaleToUse, textToUse, Constants::labelColour);
+            addAndMakeVisible(simpleLabel);
         }
 
         ~LineFlankedLabel() override
         {
-            delete simpleText;
+            delete simpleLabel;
         }
 
         void resized() override
         {
-            simpleText->setBounds(getLocalBounds());
+            juce::FlexBox fb;
+            fb.alignItems = juce::FlexBox::AlignItems::center;
+            const auto requiredHeight = simpleLabel->getRequiredHeight();
+            printf("requiredHeight: %f\n", requiredHeight);
+            fb.items.add(juce::FlexItem(*simpleLabel).withFlex(1.f).withWidth(simpleLabel->getRequiredWidth()).withHeight(requiredHeight));
+            fb.performLayout(getLocalBounds());
         }
 
         void paint(juce::Graphics& g) override
         {
-            const auto textWidth = simpleText->getTotalWidth();
+            const auto textWidth = simpleLabel->getRequiredWidth();
             const auto lineInterruptionStartX = (getWidth() - textWidth) / 2;
             const auto lineInterruptionEndX = getWidth() - lineInterruptionStartX;
 
@@ -37,6 +43,6 @@ class LineFlankedLabel : public juce::Component {
     private:
         const std::string text;
         const std::function<float()>& getScale;
-        SimpleText* simpleText = nullptr;
+        SimpleLabel* simpleLabel = nullptr;
 
 };

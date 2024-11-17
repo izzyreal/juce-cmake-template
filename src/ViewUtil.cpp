@@ -3,15 +3,16 @@
 #include "GridWrapper.hpp"
 #include "FlexBoxWrapper.hpp"
 #include "SvgComponent.hpp"
-#include "SimpleText.hpp"
 #include "SvgWithLabelGrid.hpp"
 #include "LineFlankedLabel.hpp"
+#include "FunctionKeyLabel.hpp"
+#include "Constants.hpp"
 
 float ViewUtil::getLabelHeight(const std::string& text, const std::function<float()>& getScale)
 {
     const auto newlineCount = (float) std::count(text.begin(), text.end(), '\n');
 
-    return ((BASE_FONT_SIZE * (newlineCount + 1)) + (LINE_SIZE * newlineCount)) * getScale();
+    return ((Constants::BASE_FONT_SIZE * (newlineCount + 1)) + (Constants::LINE_SIZE * newlineCount)) * getScale();
 }
 
 void ViewUtil::createComponent(
@@ -62,18 +63,25 @@ void ViewUtil::createComponent(
 
     if (!n.svg.empty() && !n.label.empty())
     {
-
-        auto simpleText = new SimpleText(getScale, n.label, n.label_style);
+        LabelComponent* labelComponent;
+        if (n.label_style == "function_key")
+        {
+            labelComponent = new FunctionKeyLabel(getScale, n.label);
+        }
+        else
+        {
+            labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour);
+        }
         auto svgComponent = new SvgComponent(n.svg);
 
         n.svg_component = svgComponent;
-        n.label_component = simpleText;
+        n.label_component = labelComponent;
 
         if (dynamic_cast<GridWrapper*>(parent))
         {
             auto svgWithLabelGrid = new SvgWithLabelGrid(n, getScale);
-            svgWithLabelGrid->components.push_back(simpleText);
-            svgWithLabelGrid->addAndMakeVisible(simpleText);
+            svgWithLabelGrid->components.push_back(labelComponent);
+            svgWithLabelGrid->addAndMakeVisible(labelComponent);
 
             svgWithLabelGrid->components.push_back(svgComponent);
 
@@ -87,15 +95,15 @@ void ViewUtil::createComponent(
             components.push_back(svgComponent);
             parent->addAndMakeVisible(svgComponent);
 
-            components.push_back(simpleText);
-            parent->addAndMakeVisible(simpleText);
+            components.push_back(labelComponent);
+            parent->addAndMakeVisible(labelComponent);
         }
         return;
     }
 
     if (!n.label.empty())
     {
-        auto simpleText = new SimpleText(getScale, n.label, n.label_style);
+        auto simpleText = new SimpleLabel(getScale, n.label, Constants::labelColour);
         n.label_component = simpleText;
         components.push_back(simpleText);
         parent->addAndMakeVisible(simpleText);

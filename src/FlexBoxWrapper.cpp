@@ -2,8 +2,9 @@
 
 #include "GridWrapper.hpp"
 #include "SvgComponent.hpp"
-#include "SimpleText.hpp"
 #include "ViewUtil.hpp"
+#include "LabelComponent.hpp"
+#include "Constants.hpp"
 
 #include <cassert>
 
@@ -32,19 +33,19 @@ static void processSvgWithLabel(
 {
     auto childFlexBox = std::make_unique<juce::FlexBox>();
     childFlexBox->flexDirection = juce::FlexBox::Direction::column;
-    const auto min_width_label = dynamic_cast<SimpleText*>(labelComponent)->getTotalWidth();
+    const auto min_width_label = dynamic_cast<LabelComponent*>(labelComponent)->getRequiredWidth();
 
     const auto childFlexBoxMinWidth = std::max<float>((float) min_width_label, minWidth);
 
     const auto labelHeight = ViewUtil::getLabelHeight(labelText, getScale);
 
-    parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withMinHeight(minHeight + labelHeight).withFlex(flexGrow));
+    parent.items.add(juce::FlexItem(*childFlexBox).withMinWidth(childFlexBoxMinWidth).withFlex(flexGrow));
     flexBoxes.push_back(std::move(childFlexBox));
 
     auto label_item = juce::FlexItem(*labelComponent)
         .withMinWidth(childFlexBoxMinWidth)
         .withMinHeight(labelHeight)
-        .withMargin(juce::FlexItem::Margin(0.f, 0.f, BASE_FONT_SIZE * 0.5f * getScale(), 0.f));
+        .withMargin(juce::FlexItem::Margin(0.f, 0.f, Constants::BASE_FONT_SIZE * 0.5f * getScale(), 0.f));
 
     flexBoxes.back()->items.add(label_item);
     flexBoxes.back()->items.add(juce::FlexItem(*svgComponent).withMinWidth(minWidth).withMinHeight(minHeight));
