@@ -5,8 +5,9 @@
 
 #include <string>
 #include <functional>
+#include <fstream>
 
-const float BASE_FONT_SIZE = 4.f;
+const float BASE_FONT_SIZE = 5.0f;
 const float LINE_SIZE = BASE_FONT_SIZE * 0.3f;
 
 class SimpleText : public juce::Component {
@@ -41,6 +42,8 @@ class SimpleText : public juce::Component {
             int row = 0;
             std::string buf;
             bool should_draw = false;
+
+            g.setColour(juce::Colour::fromRGB(70, 70, 70));
 
             for (auto c : text) 
             {
@@ -95,10 +98,21 @@ class SimpleText : public juce::Component {
         std::string text;
         std::string label_style;
         const std::function<float()> getScale;
+        juce::Font font;
 
         juce::Font getFont()
         {
-            return juce::Font("Helvetica Neue", BASE_FONT_SIZE * getScale(), juce::Font::bold);
+
+            if (!font.getTypefaceName().contains("Nimbus"))
+            {
+                std::ifstream file{"/Users/izmar/Downloads/nimbus-sans-novus-semibold-rounded.otf", std::ios::binary};
+                std::vector<char> fontData(std::istreambuf_iterator<char>(file), {});
+                font = juce::Font(juce::Typeface::createSystemTypefaceFor(fontData.data(), fontData.size()));
+            }
+            
+            font.setHeight(BASE_FONT_SIZE * getScale());
+
+            return font;
         }
 
         float getLabelMargin()
