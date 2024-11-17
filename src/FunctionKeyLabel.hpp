@@ -10,7 +10,7 @@ class FunctionKeyLabel : public LabelComponent {
     public:
         FunctionKeyLabel(const std::function<float()>& getScaleToUse, std::string textToUse)
         {
-            simpleLabel = new SimpleLabel(getScaleToUse, textToUse, Constants::labelColour);
+            simpleLabel = new SimpleLabel(getScaleToUse, textToUse, Constants::darkLabelColour);
             addAndMakeVisible(simpleLabel);
         }
 
@@ -22,9 +22,6 @@ class FunctionKeyLabel : public LabelComponent {
         void resized() override
         {
             juce::FlexBox fb;
-            fb.justifyContent = juce::FlexBox::JustifyContent::center;
-            fb.alignContent = juce::FlexBox::AlignContent::center;
-
             fb.items.add(juce::FlexItem(*simpleLabel).withFlex(1.f).withHeight(simpleLabel->getRequiredHeight()).withAlignSelf(juce::FlexItem::AlignSelf::center));
             fb.performLayout(getLocalBounds());
         }
@@ -44,6 +41,11 @@ class FunctionKeyLabel : public LabelComponent {
         float getRequiredWidth() override
         {
             return simpleLabel->getRequiredWidth() + (getLabelMargin() * 2);
+        }
+
+        float getRequiredHeight() override
+        {
+            return simpleLabel->getRequiredHeight();
         }
 
     private:

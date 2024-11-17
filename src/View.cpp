@@ -3,6 +3,7 @@
 #include "GridWrapper.hpp"
 #include "FlexBoxWrapper.hpp"
 #include "ViewUtil.hpp"
+#include "Constants.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -94,8 +95,7 @@ View::~View()
 
 void View::paint(juce::Graphics& g)
 {
-    juce::Colour mpc2000xl_chassis = juce::Colour::fromRGB(230, 238, 233);
-    g.fillAll(mpc2000xl_chassis);
+    g.fillAll(Constants::chassisColour);
 }
 
 void View::resized()

@@ -54,7 +54,8 @@ static void processChildren(
 
         if (c.label_component != nullptr)
         {
-            parent.items.add(juce::GridItem(c.label_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
+            const auto margin = c.label_style == "rounded" ? 4.f : 0.f;
+            parent.items.add(juce::GridItem(c.label_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]).withMargin(juce::GridItem::Margin(margin)));
         }
     }
 }

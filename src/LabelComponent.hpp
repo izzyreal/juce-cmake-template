@@ -3,6 +3,6 @@
 
 class LabelComponent : public juce::Component {
     public:
-        virtual float getRequiredWidth() { return 0.f; }
-        virtual float getRequiredHeight() { return 0.f; }
+        virtual float getRequiredWidth() = 0;
+        virtual float getRequiredHeight() = 0;
 };

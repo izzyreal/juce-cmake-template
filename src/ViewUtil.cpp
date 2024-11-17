@@ -6,6 +6,7 @@
 #include "SvgWithLabelGrid.hpp"
 #include "LineFlankedLabel.hpp"
 #include "FunctionKeyLabel.hpp"
+#include "RoundedRectangleLabel.hpp"
 #include "Constants.hpp"
 
 float ViewUtil::getLabelHeight(const std::string& text, const std::function<float()>& getScale)
@@ -103,10 +104,20 @@ void ViewUtil::createComponent(
 
     if (!n.label.empty())
     {
-        auto simpleText = new SimpleLabel(getScale, n.label, Constants::labelColour);
-        n.label_component = simpleText;
-        components.push_back(simpleText);
-        parent->addAndMakeVisible(simpleText);
+        LabelComponent* labelComponent = nullptr;
+
+        if (n.label_style == "rounded")
+        {
+            labelComponent = new RoundedRectangleLabel(getScale, n.label);
+        }
+        else
+        {
+            labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour); 
+        }
+
+        n.label_component = labelComponent;
+        components.push_back(labelComponent);
+        parent->addAndMakeVisible(labelComponent);
         return;
     }
 }
