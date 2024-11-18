@@ -82,7 +82,7 @@ static void processChildren(
             parent.items.add(juce::FlexItem(*c.line_flanked_label_component).withFlex(flexGrow));
             continue;
         }
-        else if (c.node_type == "face_paint_grey_rectangle")
+        else if (c.node_type == "face_paint_grey_rectangle" || c.node_type == "chassis_rectangle")
         {
             parent.items.add(juce::FlexItem(*c.rectangle_component).withFlex(flexGrow));
             continue;

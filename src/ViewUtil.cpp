@@ -68,9 +68,9 @@ void ViewUtil::createComponent(
         n.j_or_l_shape_component = components.back();
         return;
     }
-    else if (n.node_type == "face_paint_grey_rectangle")
+    else if (n.node_type == "face_paint_grey_rectangle" || n.node_type == "chassis_rectangle")
     {
-        const auto rectangle = new Rectangle(Constants::greyFacePaintColour);
+        const auto rectangle = new Rectangle(n.node_type == "chassis_rectangle" ? Constants::chassisColour : Constants::greyFacePaintColour);
         components.emplace_back(rectangle);
         parent->addAndMakeVisible(components.back());
         n.rectangle_component = rectangle;
