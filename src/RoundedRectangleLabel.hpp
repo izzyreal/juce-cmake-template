@@ -3,7 +3,6 @@
 #include "LabelComponent.hpp"
 
 #include "SimpleLabel.hpp"
-#include "Constants.hpp"
 
 class RoundedRectangleLabel : public LabelComponent {
     public:
