@@ -4,7 +4,7 @@
 
 class GridWrapper : public juce::Component {
     public:
-        GridWrapper(node &n);
+        GridWrapper(node &n, const std::function<float()> &getScale);
         ~GridWrapper() override;
 
         void resized() override;
@@ -13,4 +13,5 @@ class GridWrapper : public juce::Component {
 
     private:
         node& node;
+        const std::function<float()> &getScale;
 };

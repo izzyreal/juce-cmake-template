@@ -6,7 +6,8 @@
 
 #include <cassert>
 
-GridWrapper::GridWrapper(struct node &nodeToUse) : node(nodeToUse)
+GridWrapper::GridWrapper(struct node &nodeToUse, const std::function<float()> &getScaleToUse)
+    : node(nodeToUse), getScale(getScaleToUse)
 {
     printf("GridWrapper for %s\n", node.name.c_str());
 }
@@ -19,13 +20,16 @@ GridWrapper::~GridWrapper()
 
 static void processChildren(
         juce::Grid& parent,
-        const std::vector<node>& children)
+        const std::vector<node>& children,
+        const float scale)
 {
     for (auto& c : children)
     {
+        const auto margin = c.margin * scale;
+
         if (c.node_type == "grid")
         {
-            parent.items.add(juce::GridItem(c.grid_wrapper_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
+            parent.items.add(juce::GridItem(c.grid_wrapper_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]).withMargin(margin));
             continue;
         }
         else if (c.node_type == "flex_box")
@@ -60,7 +64,7 @@ static void processChildren(
            // The case where there's both an SVG, as well as a label, should be handled by svg_with_label_grid_component.
            // Hence we make sure there's no label Component associated with this node.
             assert(c.label_component == nullptr);
-            parent.items.add(juce::GridItem(c.svg_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
+            parent.items.add(juce::GridItem(c.svg_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]).withMargin(margin));
             continue;
         }
 
@@ -91,7 +95,7 @@ void GridWrapper::resized()
     grid.templateRows = rowTrackInfos;
     grid.templateColumns = columnTrackInfos;
 
-    processChildren(grid, node.children);
+    processChildren(grid, node.children, getScale());
 
     grid.performLayout(getLocalBounds());
 }

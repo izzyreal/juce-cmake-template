@@ -19,6 +19,7 @@ static void from_json(const json& j, node& n)
         json data = json::parse(jsonFile);
         n = data.template get<node>();
         if (j.contains("area")) j.at("area").get_to(n.area);
+        if (j.contains("margin")) j.at("margin").get_to(n.margin);
     }
     else
     {

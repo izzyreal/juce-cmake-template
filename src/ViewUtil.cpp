@@ -37,7 +37,7 @@ void ViewUtil::createComponent(
 
     if (n.node_type == "grid")
     {
-        auto gridWrapper = new GridWrapper(n);
+        auto gridWrapper = new GridWrapper(n, getScale);
         createComponents(n, gridWrapper->components, gridWrapper, getScale);
         components.emplace_back(gridWrapper);
         parent->addAndMakeVisible(components.back());
