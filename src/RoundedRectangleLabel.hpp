@@ -15,7 +15,9 @@ class RoundedRectangleLabel : public LabelComponent {
 
         float getRequiredWidth() override
         {
-            return simpleLabel->getRequiredWidth() + 6.f;
+            const auto widthOfBiggestRoundedRectangleLabelInTheLocateSection =
+                ViewUtil::getFont(getScale()).getStringWidth("START");
+            return widthOfBiggestRoundedRectangleLabelInTheLocateSection + 6.f;
         }
 
         float getRequiredHeight() override

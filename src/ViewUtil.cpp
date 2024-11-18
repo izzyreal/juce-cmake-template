@@ -10,6 +10,8 @@
 #include "JOrLShape.hpp"
 #include "Constants.hpp"
 
+#include <fstream>
+
 float ViewUtil::getLabelHeight(const std::string& text, const std::function<float()>& getScale)
 {
     const auto newlineCount = (float) std::count(text.begin(), text.end(), '\n');
@@ -147,5 +149,21 @@ void ViewUtil::createComponents(
     {
         createComponent(c, components, parent, getScale);
     }
+}
+
+juce::Font& ViewUtil::getFont(const float scale)
+{
+    static juce::Font font;
+
+    if (!font.getTypefaceName().contains("Nimbus"))
+    {
+        std::ifstream file{"/Users/izmar/Downloads/nimbus-sans-novus-semibold-rounded.otf", std::ios::binary};
+        std::vector<char> fontData(std::istreambuf_iterator<char>(file), {});
+        font = juce::Font(juce::Typeface::createSystemTypefaceFor(fontData.data(), fontData.size()));
+    }
+
+    font.setHeight(Constants::BASE_FONT_SIZE * scale);
+    
+    return font;
 }
 

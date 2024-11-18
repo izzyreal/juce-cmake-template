@@ -5,10 +5,10 @@
 
 #include "LabelComponent.hpp"
 #include "Constants.hpp"
+#include "ViewUtil.hpp"
 
 #include <string>
 #include <functional>
-#include <fstream>
 
 class SimpleLabel : public LabelComponent {
     public:
@@ -22,7 +22,7 @@ class SimpleLabel : public LabelComponent {
         void paint(juce::Graphics& g) override
         {
             //g.fillAll(juce::Colours::yellowgreen);
-            g.setFont(getFont());
+            g.setFont(ViewUtil::getFont(getScale()));
 
             int row = 0;
             std::string buf;
@@ -62,7 +62,7 @@ class SimpleLabel : public LabelComponent {
             {
                 if (c == '\n')  
                 {
-                    upper = std::max<int>(getFont().getStringWidth(buf), upper);
+                    upper = std::max<int>(ViewUtil::getFont(getScale()).getStringWidth(buf), upper);
                     buf.clear();
                     should_check = false;
                     continue;
@@ -74,7 +74,7 @@ class SimpleLabel : public LabelComponent {
 
             if (should_check && !buf.empty())
             {
-                upper = std::max<int>(getFont().getStringWidth(buf), upper);
+                upper = std::max<int>(ViewUtil::getFont(getScale()).getStringWidth(buf), upper);
             }
 
             return ((float) upper );
@@ -87,25 +87,9 @@ class SimpleLabel : public LabelComponent {
             return labelHeight;
         }
 
-        juce::Font getFont()
-        {
-
-            if (!font.getTypefaceName().contains("Nimbus"))
-            {
-                std::ifstream file{"/Users/izmar/Downloads/nimbus-sans-novus-semibold-rounded.otf", std::ios::binary};
-                std::vector<char> fontData(std::istreambuf_iterator<char>(file), {});
-                font = juce::Font(juce::Typeface::createSystemTypefaceFor(fontData.data(), fontData.size()));
-            }
-
-            font.setHeight(Constants::BASE_FONT_SIZE * getScale());
-
-            return font;
-        }
-
     private:
         std::string text;
         const std::function<float()> getScale;
-        juce::Font font;
         juce::Colour colour;
 };
 

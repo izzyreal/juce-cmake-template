@@ -9,6 +9,7 @@ class FunctionKeyLabel : public LabelComponent {
 
     public:
         FunctionKeyLabel(const std::function<float()>& getScaleToUse, std::string textToUse)
+            : getScale(getScaleToUse)
         {
             simpleLabel = new SimpleLabel(getScaleToUse, textToUse, Constants::darkLabelColour);
             addAndMakeVisible(simpleLabel);
@@ -50,9 +51,10 @@ class FunctionKeyLabel : public LabelComponent {
 
     private:
         SimpleLabel* simpleLabel = nullptr;
+        const std::function<float()> &getScale;
 
         float getLabelMargin()
         {
-            return simpleLabel->getFont().getHeight() * 0.6f;
+            return ViewUtil::getFont(getScale()).getHeight() * 0.6f;
         }
 };

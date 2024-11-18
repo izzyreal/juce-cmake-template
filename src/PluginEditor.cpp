@@ -2,6 +2,8 @@
 
 #include "PluginEditor.hpp"
 
+#include "ViewUtil.hpp"
+
 PluginEditor::PluginEditor(PluginProcessor& p)
         : AudioProcessorEditor(&p), pluginProcessor(p)
 {
@@ -21,6 +23,8 @@ PluginEditor::PluginEditor(PluginProcessor& p)
 
 PluginEditor::~PluginEditor()
 {
+    // We assure the custom font is not present in the statically allocated font
+    ViewUtil::getFont(0.f).setTypefaceName("foo");
     delete view;
     delete inspector;
 }
