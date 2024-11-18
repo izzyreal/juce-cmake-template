@@ -9,4 +9,6 @@ class Constants {
         static juce::Colour darkLabelColour;
         static float BASE_FONT_SIZE;
         static float LINE_SIZE;
+        static float lineThickness1;
+        static float lineThickness2;
 };

@@ -34,9 +34,10 @@ class LineFlankedLabel : public juce::Component {
             const auto lineInterruptionStartX = (getWidth() - textWidth) / 2;
             const auto lineInterruptionEndX = getWidth() - lineInterruptionStartX;
 
-            g.setColour(juce::Colours::black);
             const auto line_y_base = getHeight() / 2;
-            const auto line_thickness = 1.0f * getScale() * 0.7;
+            const auto line_thickness = Constants::lineThickness1 * getScale();
+
+            g.setColour(juce::Colours::black);
             g.drawLine(0, line_y_base, lineInterruptionStartX, line_y_base, line_thickness);
             g.drawLine(lineInterruptionEndX, line_y_base, getWidth(), line_y_base, line_thickness);
         }

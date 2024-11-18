@@ -3,37 +3,39 @@
 #include "Constants.hpp"
 
 class JOrLShape : public juce::Component {
+
     public:
         enum Shape { J, L };
 
-        JOrLShape(const Shape shapeToUse) : shape(shapeToUse)
+        JOrLShape(const Shape shapeToUse, const std::function<float()> &getScaleToUse)
+            : shape(shapeToUse), getScale(getScaleToUse)
     {}
 
         void paint(juce::Graphics &g) override
         {
-            const auto line_thickness = 3.f;
-            const auto half_line_thickness = line_thickness / 2;
-            const auto line_top = half_line_thickness;
-            const auto line_left = half_line_thickness;
-            const auto line_right = getWidth() - half_line_thickness;
-            const auto line_bottom = getHeight() - half_line_thickness;
             g.setColour(Constants::darkLabelColour);
-            g.drawLine(line_left, line_bottom, line_right, line_bottom, line_thickness);
+
+            const auto horizontal_line_thickness = Constants::lineThickness1 * getScale();
+            const auto vertical_line_thickness = Constants::lineThickness2 * getScale();
+
+            const auto half_thickness1 = Constants::lineThickness1 / 2;
+            const auto half_thickness2 = Constants::lineThickness2 / 2;
+
+            g.drawLine(0, getHeight() - std::ceil<float>(half_thickness1), getWidth(), getHeight() - std::ceil<float>(half_thickness1), horizontal_line_thickness);
 
             switch (shape)
             {
                 case Shape::J:
-                    g.drawLine(line_right, line_top, line_right, line_bottom, line_thickness);
-                    g.drawEllipse(line_right, line_bottom, line_thickness, line_thickness, line_thickness);
+                    g.drawLine(getWidth() - half_thickness2, 0, getWidth() - half_thickness2, getHeight(), vertical_line_thickness);
                     break;
                 case Shape::L:
                 default:
-                    g.drawLine(line_left, line_top, line_left, line_bottom, line_thickness);
-                    g.drawEllipse(line_left, line_bottom, line_thickness, line_thickness, line_thickness);
+                    g.drawLine(0 + half_thickness2, 0, 0 + half_thickness2, getWidth(), vertical_line_thickness);
                     break;
             }
         }
 
     private:
         const Shape shape;
+        const std::function<float()> & getScale;
 };

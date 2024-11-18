@@ -58,7 +58,8 @@ void ViewUtil::createComponent(
     }
     else if (n.node_type == "j_shape" || n.node_type == "l_shape")
     {
-        components.emplace_back(new JOrLShape(n.node_type == "j_shape" ? JOrLShape::Shape::J : JOrLShape::Shape::L));
+        const auto jOrLShape = new JOrLShape(n.node_type == "j_shape" ? JOrLShape::Shape::J : JOrLShape::Shape::L, getScale);
+        components.emplace_back(jOrLShape);
         parent->addAndMakeVisible(components.back());
         n.j_or_l_shape_component = components.back();
         return;
