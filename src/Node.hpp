@@ -30,4 +30,5 @@ struct node {
     juce::Component *svg_with_label_grid_component;
     juce::Component *line_flanked_label_component;
     juce::Component *j_or_l_shape_component;
+    juce::Component *rectangle_component;
 };

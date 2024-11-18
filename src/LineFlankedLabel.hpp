@@ -30,7 +30,7 @@ class LineFlankedLabel : public juce::Component {
         void paint(juce::Graphics& g) override
         {
             //g.fillAll(juce::Colours::yellowgreen);
-            const auto textWidth = simpleLabel->getRequiredWidth();
+            const auto textWidth = simpleLabel->getRequiredWidth() + (2.f * getScale());
             const auto lineInterruptionStartX = (getWidth() - textWidth) / 2;
             const auto lineInterruptionEndX = getWidth() - lineInterruptionStartX;
 

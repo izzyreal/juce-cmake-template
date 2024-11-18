@@ -8,6 +8,7 @@
 #include "FunctionKeyLabel.hpp"
 #include "RoundedRectangleLabel.hpp"
 #include "JOrLShape.hpp"
+#include "Rectangle.hpp"
 #include "Constants.hpp"
 
 #include <fstream>
@@ -32,6 +33,7 @@ void ViewUtil::createComponent(
     n.grid_wrapper_component = nullptr;
     n.line_flanked_label_component = nullptr;
     n.j_or_l_shape_component = nullptr;
+    n.rectangle_component = nullptr;
 
     if (n.node_type == "grid")
     {
@@ -64,6 +66,14 @@ void ViewUtil::createComponent(
         components.emplace_back(jOrLShape);
         parent->addAndMakeVisible(components.back());
         n.j_or_l_shape_component = components.back();
+        return;
+    }
+    else if (n.node_type == "face_paint_grey_rectangle")
+    {
+        const auto rectangle = new Rectangle(Constants::greyFacePaintColour);
+        components.emplace_back(rectangle);
+        parent->addAndMakeVisible(components.back());
+        n.rectangle_component = rectangle;
         return;
     }
 

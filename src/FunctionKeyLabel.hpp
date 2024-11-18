@@ -33,8 +33,7 @@ class FunctionKeyLabel : public LabelComponent {
 
             auto background_rect = juce::Rectangle((getWidth() - requiredWidth) / 2.f, 0.f, requiredWidth, (float) getHeight());
 
-            juce::Colour label_background = juce::Colour::fromRGB(139, 151, 163);
-            g.setColour(label_background);
+            g.setColour(Constants::greyFacePaintColour);
             g.fillRect(background_rect);
             Component::paint(g);
         }
