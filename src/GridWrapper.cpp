@@ -25,54 +25,57 @@ static void processChildren(
 {
     for (auto& c : children)
     {
-        const auto margin = c.margin * scale;
+        juce::Component* component = nullptr;
+        float width = juce::GridItem::notAssigned;
 
         if (c.node_type == "grid")
         {
-            parent.items.add(juce::GridItem(c.grid_wrapper_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]).withMargin(margin));
-            continue;
+            component = c.grid_wrapper_component;
         }
         else if (c.node_type == "flex_box")
         {
-            parent.items.add(juce::GridItem(c.flex_box_wrapper_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
-            continue;
+            component = c.flex_box_wrapper_component;
         }
         else if (c.node_type == "line_flanked_label")
         {
-            parent.items.add(juce::GridItem(c.line_flanked_label_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
-            continue;
+            component = c.line_flanked_label_component;
         }
         else if (c.node_type == "j_shape" || c.node_type == "l_shape")
         {
-            parent.items.add(juce::GridItem(c.j_or_l_shape_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
-            continue;
+            component = c.j_or_l_shape_component;
         }
         else if (c.node_type == "face_paint_grey_rectangle" || c.node_type == "chassis_rectangle")
         {
-            parent.items.add(juce::GridItem(c.rectangle_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
-            continue;
+            component = c.rectangle_component;
         }
-
-        if (c.svg_with_label_grid_component != nullptr)
+        else if (c.svg_with_label_grid_component != nullptr)
         {
-            parent.items.add(juce::GridItem(c.svg_with_label_grid_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]));
-            continue;
+            component = c.svg_with_label_grid_component;
         }
-
-        if (c.svg_component != nullptr)
+        else if (c.svg_component != nullptr)
         {
            // The case where there's both an SVG, as well as a label, should be handled by svg_with_label_grid_component.
            // Hence we make sure there's no label Component associated with this node.
             assert(c.label_component == nullptr);
-            parent.items.add(juce::GridItem(c.svg_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]).withMargin(margin));
-            continue;
+            component = c.svg_component;
+        }
+        else if (c.label_component != nullptr)
+        {
+            width = dynamic_cast<LabelComponent*>(c.label_component)->getRequiredWidth();
+            component = c.label_component;
         }
 
-        if (c.label_component != nullptr)
+        if (component != nullptr)
         {
-            const auto width = dynamic_cast<LabelComponent*>(c.label_component)->getRequiredWidth();
-            const auto item = juce::GridItem(c.label_component).withArea(c.area[0], c.area[1], c.area[2], c.area[3]);
-            parent.items.add(item.withWidth(width));
+            const auto margin = c.margin * scale;
+            const auto area = c.area;
+
+            const auto item = juce::GridItem(component)
+                .withMargin(margin)
+                .withWidth(width)
+                .withArea(area[0], area[1], area[2], area[3]);
+
+            parent.items.add(item);
         }
     }
 }
