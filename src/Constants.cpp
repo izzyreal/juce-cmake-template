@@ -10,5 +10,5 @@ juce::Colour Constants::greyFacePaintColour = juce::Colour::fromRGB(139, 151, 16
 float Constants::BASE_FONT_SIZE = 5.0f;
 float Constants::LINE_SIZE = BASE_FONT_SIZE * 0.3f;
 
-float Constants::lineThickness1 = 0.7f;
+float Constants::lineThickness1 = 0.5f;
 float Constants::lineThickness2 = 3.f;

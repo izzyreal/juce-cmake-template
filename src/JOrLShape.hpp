@@ -26,11 +26,11 @@ class JOrLShape : public juce::Component {
             switch (shape)
             {
                 case Shape::J:
-                    g.drawLine(getWidth() - half_thickness2, 0, getWidth() - half_thickness2, getHeight(), vertical_line_thickness);
+                    g.drawLine(getWidth() - half_thickness2, 0, getWidth() - half_thickness2, getHeight() - half_thickness1, vertical_line_thickness);
                     break;
                 case Shape::L:
                 default:
-                    g.drawLine(0 + half_thickness2, 0, 0 + half_thickness2, getWidth(), vertical_line_thickness);
+                    g.drawLine(0 + half_thickness2, 0, 0 + half_thickness2, getHeight() - half_thickness1, vertical_line_thickness);
                     break;
             }
         }
