@@ -17,7 +17,6 @@ SvgWithLabelGrid::~SvgWithLabelGrid()
 
 void SvgWithLabelGrid::resized()
 {
-
     const auto labelHeight = ViewUtil::getLabelHeight(node.label, getScale);
 
     juce::Grid grid;
