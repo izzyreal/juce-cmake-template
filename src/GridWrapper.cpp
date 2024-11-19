@@ -1,8 +1,8 @@
 #include "GridWrapper.hpp"
 
 #include "FlexBoxWrapper.hpp"
-
 #include "LabelComponent.hpp"
+#include "SvgComponent.hpp"
 
 #include <cassert>
 
@@ -58,6 +58,8 @@ static void processChildren(
            // Hence we make sure there's no label Component associated with this node.
             assert(c.label_component == nullptr);
             component = c.svg_component;
+            const auto drawableBounds = dynamic_cast<SvgComponent*>(component)->getDrawableBounds();
+            width = drawableBounds.getWidth() * scale;
         }
         else if (c.label_component != nullptr)
         {
