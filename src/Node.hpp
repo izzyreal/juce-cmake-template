@@ -15,6 +15,7 @@ struct node {
     std::string direction;
     float flex_grow;
     std::string align_items;
+    std::vector<float> margins;
 
     // grid
     std::vector<uint8_t> row_fractions;

@@ -19,15 +19,46 @@ static void from_json(const json& j, node& n)
         json data = json::parse(jsonFile);
         n = data.template get<node>();
         if (j.contains("area")) j.at("area").get_to(n.area);
-        if (j.contains("margin")) j.at("margin").get_to(n.margin);
+        if (j.contains("margin"))
+        {
+            if (j.at("margin").is_array())
+            {
+                j.at("margin").get_to(n.margins);
+                n.margin = 0.f;
+            }
+            else
+            {
+                j.at("margin").get_to(n.margin);
+            }
+        }
+        else
+        {
+            n.margin = 0.f;
+        }
     }
     else
     {
+        if (j.contains("margin"))
+        {
+            if (j.at("margin").is_array())
+            {
+                j.at("margin").get_to(n.margins);
+                n.margin = 0.f;
+            }
+            else
+            {
+                j.at("margin").get_to(n.margin);
+            }
+        }
+        else
+        {
+            n.margin = 0.f;
+        }
+
         if (j.contains("name"))             j.at("name").get_to(n.name);
         if (j.contains("type"))             j.at("type").get_to(n.node_type);
         if (j.contains("svg"))              j.at("svg").get_to(n.svg);
         if (j.contains("children"))         j.at("children").get_to(n.children);
-        if (j.contains("margin"))           j.at("margin").get_to(n.margin); else n.margin = 0.f;
         if (j.contains("label"))            j.at("label").get_to(n.label);
         if (j.contains("label_style"))      j.at("label_style").get_to(n.label_style);
         if (j.contains("direction"))        j.at("direction").get_to(n.direction);
@@ -70,6 +101,14 @@ static void from_json(const json& j, node& n)
         printf("-          area:");
         for (auto& f : n.area)
             printf(" %i ", f);
+        printf("\n");
+    }
+
+    if (!n.margins.empty())
+    {
+        printf("-       margins:");
+        for (auto& f : n.margins)
+            printf(" %f ", f);
         printf("\n");
     }
 

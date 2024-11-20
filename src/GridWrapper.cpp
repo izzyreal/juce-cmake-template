@@ -69,7 +69,11 @@ static void processChildren(
 
         if (component != nullptr)
         {
-            const auto margin = c.margin * scale;
+            const auto margin = c.margins.empty() ?
+                juce::GridItem::Margin(c.margin * scale) :
+                juce::GridItem::Margin(c.margins[0] * scale, c.margins[1] * scale,
+                        c.margins[2] * scale, c.margins[3] * scale);
+
             const auto area = c.area;
 
             const auto item = juce::GridItem(component)
