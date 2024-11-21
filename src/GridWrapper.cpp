@@ -92,6 +92,15 @@ void GridWrapper::resized()
     juce::Grid grid;
     grid.justifyItems = juce::Grid::JustifyItems::center;
 
+    if (node.justify_items == "start")
+    {
+        grid.justifyItems = juce::Grid::JustifyItems::start;
+    }
+    else if (node.justify_items == "end")
+    {
+        grid.justifyItems = juce::Grid::JustifyItems::end;
+    }
+
     juce::Array<juce::Grid::TrackInfo> rowTrackInfos;
     juce::Array<juce::Grid::TrackInfo> columnTrackInfos;
 

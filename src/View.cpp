@@ -67,6 +67,7 @@ static void from_json(const json& j, node& n)
         if (j.contains("row_fractions"))    j.at("row_fractions").get_to(n.row_fractions);
         if (j.contains("column_fractions")) j.at("column_fractions").get_to(n.column_fractions);
         if (j.contains("area"))             j.at("area").get_to(n.area);
+        if (j.contains("justify_items"))    j.at("justify_items").get_to(n.justify_items);
     }
 
 
