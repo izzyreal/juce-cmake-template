@@ -137,6 +137,10 @@ void ViewUtil::createComponent(
         {
             labelComponent = new RoundedRectangleLabel(getScale, n.label, Constants::darkLabelColour, Constants::chassisColour);
         }
+        else if (n.label_style == "pad_letters")
+        {
+            labelComponent = new SimpleLabel(getScale, n.label, Constants::betweenChassisAndLabelColour); 
+        }
         else
         {
             labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour); 

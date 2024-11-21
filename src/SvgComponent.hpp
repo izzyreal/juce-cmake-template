@@ -36,7 +36,7 @@ class SvgComponent : public juce::Component
 
         void paint(juce::Graphics& g) override
         {
-            g.fillAll(randomColor);
+            //g.fillAll(randomColor);
             if (svgDrawable == nullptr)
             {
                 g.fillAll(juce::Colours::red);
