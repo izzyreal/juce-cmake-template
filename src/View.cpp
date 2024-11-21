@@ -138,7 +138,7 @@ View::~View()
 
 void View::paint(juce::Graphics& g)
 {
-    g.fillAll(Constants::chassisColour);
+    //g.fillAll(Constants::chassisColour);
 }
 
 void View::resized()

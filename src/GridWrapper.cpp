@@ -27,6 +27,7 @@ static void processChildren(
     {
         juce::Component* component = nullptr;
         float width = juce::GridItem::notAssigned;
+        float height = juce::GridItem::notAssigned;
 
         if (c.node_type == "grid")
         {
@@ -67,6 +68,7 @@ static void processChildren(
             {
                 const auto drawableBounds = dynamic_cast<SvgComponent*>(component)->getDrawableBounds();
                 width = drawableBounds.getWidth() * scale;
+                height = drawableBounds.getHeight() * scale;
             }
         }
         else if (c.label_component != nullptr)
@@ -87,6 +89,7 @@ static void processChildren(
             const auto item = juce::GridItem(component)
                 .withMargin(margin)
                 .withWidth(width)
+                //.withHeight(height)
                 .withArea(area[0], area[1], area[2], area[3]);
 
             parent.items.add(item);
