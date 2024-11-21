@@ -171,7 +171,7 @@ juce::Font& ViewUtil::getFont(const float scale)
 
     if (!font.getTypefaceName().contains("Nimbus"))
     {
-        std::ifstream file{"/Users/izmar/Downloads/nimbus-sans-novus-semibold-rounded.otf", std::ios::binary};
+        std::ifstream file{"/Users/izmar/Downloads/nimbus-sans-novus-semibold-rounded-50.otf", std::ios::binary};
         std::vector<char> fontData(std::istreambuf_iterator<char>(file), {});
         font = juce::Font(juce::Typeface::createSystemTypefaceFor(fontData.data(), fontData.size()));
     }
