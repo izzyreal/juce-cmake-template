@@ -68,6 +68,8 @@ static void from_json(const json& j, node& n)
         if (j.contains("column_fractions")) j.at("column_fractions").get_to(n.column_fractions);
         if (j.contains("area"))             j.at("area").get_to(n.area);
         if (j.contains("justify_items"))    j.at("justify_items").get_to(n.justify_items);
+        if (j.contains("width"))            j.at("width").get_to(n.width);
+        if (j.contains("aspect_ratio_height")) j.at("aspect_ratio_height").get_to(n.aspect_ratio_height); else n.aspect_ratio_height = 0.f;
     }
 
 

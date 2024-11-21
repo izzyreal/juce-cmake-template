@@ -17,6 +17,8 @@ struct node {
     std::string align_items;
     std::vector<float> margins;
     std::string justify_items;
+    std::string width;
+    float aspect_ratio_height;
 
     // grid
     std::vector<uint8_t> row_fractions;
