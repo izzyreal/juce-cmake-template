@@ -21,8 +21,8 @@ struct node {
     float aspect_ratio_height;
 
     // grid
-    std::vector<uint8_t> row_fractions;
-    std::vector<uint8_t> column_fractions;
+    std::vector<uint16_t> row_fractions;
+    std::vector<uint16_t> column_fractions;
 
     // grid leaf item
     std::vector<uint8_t> area;
