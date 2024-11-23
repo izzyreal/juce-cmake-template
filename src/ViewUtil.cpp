@@ -5,8 +5,7 @@
 #include "SvgComponent.hpp"
 #include "SvgWithLabelGrid.hpp"
 #include "LineFlankedLabel.hpp"
-#include "FunctionKeyLabel.hpp"
-#include "RoundedRectangleLabel.hpp"
+#include "RectangleLabel.hpp"
 #include "JOrLShape.hpp"
 #include "Rectangle.hpp"
 #include "Constants.hpp"
@@ -120,7 +119,7 @@ void ViewUtil::createComponent(
         LabelComponent* labelComponent;
         if (n.label_style == "function_key")
         {
-            labelComponent = new FunctionKeyLabel(getScale, n.label);
+            labelComponent = new RectangleLabel(getScale, n.label, n.label, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.f, 10.f);
         }
         else
         {
@@ -161,11 +160,11 @@ void ViewUtil::createComponent(
 
         if (n.label_style == "chassis_background")
         {
-            labelComponent = new RoundedRectangleLabel(getScale, n.label, Constants::chassisColour, Constants::darkLabelColour);
+            labelComponent = new RectangleLabel(getScale, n.label, n.label_text_to_calculate_width, Constants::chassisColour, Constants::darkLabelColour, 0.f, 2.f);
         }
         else if (n.label_style == "rounded")
         {
-            labelComponent = new RoundedRectangleLabel(getScale, n.label, Constants::darkLabelColour, Constants::chassisColour);
+            labelComponent = new RectangleLabel(getScale, n.label, n.label_text_to_calculate_width, Constants::darkLabelColour, Constants::chassisColour, 1.5f, 6.f);
         }
         else if (n.label_style == "pad_letters")
         {

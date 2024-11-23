@@ -18,6 +18,10 @@ SvgWithLabelGrid::~SvgWithLabelGrid()
 
 void SvgWithLabelGrid::resized()
 {
+    if (node.name == "f1")
+    {
+        printf("SvgWithLabelGrid resized to %i, %i\n", getWidth(), getHeight());
+    }
     const auto labelHeight = ViewUtil::getLabelHeight(node.label, getScale);
     const auto drawableBounds = dynamic_cast<SvgComponent*>(node.svg_component)->getDrawableBounds();
     const auto svgWidth = drawableBounds.getWidth() * getScale();

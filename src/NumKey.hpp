@@ -5,14 +5,14 @@
 #include "SimpleLabel.hpp"
 #include "Constants.hpp"
 #include "SvgComponent.hpp"
-#include "FunctionKeyLabel.hpp"
+#include "RectangleLabel.hpp"
 
 class NumKey : public juce::Component {
     public:
         NumKey(const std::function<float()> &getScaleToUse, const std::string topLabelToUse, const std::string bottomLabelToUse, std::string svgPath)
         {
             topLabel = new SimpleLabel(getScaleToUse, topLabelToUse, Constants::darkLabelColour);
-            bottomLabel = new FunctionKeyLabel(getScaleToUse, bottomLabelToUse);
+            bottomLabel = new RectangleLabel(getScaleToUse, bottomLabelToUse, bottomLabelToUse, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.f, 2.f);
             svgComponent = new SvgComponent(svgPath);
 
             addAndMakeVisible(topLabel);
@@ -42,6 +42,6 @@ class NumKey : public juce::Component {
 
     private:
         SimpleLabel* topLabel = nullptr;
-        FunctionKeyLabel* bottomLabel = nullptr;
+        RectangleLabel* bottomLabel = nullptr;
         SvgComponent* svgComponent = nullptr;
 };

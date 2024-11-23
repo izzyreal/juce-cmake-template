@@ -19,6 +19,7 @@ struct node {
     std::string justify_items;
     std::string width;
     float aspect_ratio_height;
+    std::string label_text_to_calculate_width;
 
     // grid
     std::vector<uint16_t> row_fractions;

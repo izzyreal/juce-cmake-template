@@ -70,6 +70,7 @@ static void from_json(const json& j, node& n)
         if (j.contains("justify_items"))    j.at("justify_items").get_to(n.justify_items);
         if (j.contains("width"))            j.at("width").get_to(n.width);
         if (j.contains("aspect_ratio_height")) j.at("aspect_ratio_height").get_to(n.aspect_ratio_height); else n.aspect_ratio_height = 0.f;
+        if (j.contains("label_text_to_calculate_width")) j.at("label_text_to_calculate_width").get_to(n.label_text_to_calculate_width);
     }
 
 
