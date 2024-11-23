@@ -71,6 +71,10 @@ static void processChildren(
                 height = drawableBounds.getHeight() * scale;
             }
         }
+        else if (c.node_type == "num_key")
+        {
+            component = c.num_key_component;
+        }
         else if (c.label_component != nullptr)
         {
             width = dynamic_cast<LabelComponent*>(c.label_component)->getRequiredWidth();

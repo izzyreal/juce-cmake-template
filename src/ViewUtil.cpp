@@ -10,6 +10,7 @@
 #include "JOrLShape.hpp"
 #include "Rectangle.hpp"
 #include "Constants.hpp"
+#include "NumKey.hpp"
 
 #include <fstream>
 
@@ -34,6 +35,7 @@ void ViewUtil::createComponent(
     n.line_flanked_label_component = nullptr;
     n.j_or_l_shape_component = nullptr;
     n.rectangle_component = nullptr;
+    n.num_key_component = nullptr;
 
     if (n.node_type == "grid")
     {
@@ -74,6 +76,34 @@ void ViewUtil::createComponent(
         components.emplace_back(rectangle);
         parent->addAndMakeVisible(components.back());
         n.rectangle_component = rectangle;
+        return;
+    }
+    else if (n.node_type == "num_key")
+    {
+        std::string topLabel;
+        std::string bottomLabel;
+        
+        bool doingTop = true;
+
+        for (auto c : n.label)
+        {
+            if (c == '\n' && !doingTop)
+            {
+                break;
+            }
+            if (c == '\n' && doingTop)
+            {
+                doingTop = false;
+                continue;
+            }
+            if (doingTop) topLabel += c;
+            else bottomLabel += c;
+        }
+
+        const auto numKey = new NumKey(getScale, topLabel, bottomLabel, n.svg);
+        components.emplace_back(numKey);
+        parent->addAndMakeVisible(components.back());
+        n.num_key_component = numKey;
         return;
     }
 

@@ -35,4 +35,5 @@ struct node {
     juce::Component *line_flanked_label_component;
     juce::Component *j_or_l_shape_component;
     juce::Component *rectangle_component;
+    juce::Component *num_key_component;
 };
