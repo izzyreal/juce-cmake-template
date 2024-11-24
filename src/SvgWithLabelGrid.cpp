@@ -25,7 +25,7 @@ void SvgWithLabelGrid::resized()
     juce::Grid grid;
     grid.justifyItems = juce::Grid::JustifyItems::center;
 
-    grid.templateRows = { juce::Grid::Px(labelHeight), juce::Grid::Px(ViewUtil::getLabelHeight("", getScale) / 2), juce::Grid::Fr(1) };
+    grid.templateRows = { juce::Grid::Px(labelHeight), juce::Grid::Px(ViewUtil::getLabelHeight("", getScale) * 0.2f), juce::Grid::Fr(1) };
     grid.templateColumns = { juce::Grid::Fr(1) };
 
     grid.items.add(juce::GridItem(node.label_component).withArea(1, 1, 1, 1));

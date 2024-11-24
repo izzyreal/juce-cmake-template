@@ -9,7 +9,7 @@ juce::Colour Constants::greyFacePaintColour = juce::Colour::fromRGB(139, 151, 16
 juce::Colour Constants::betweenChassisAndLabelColour = chassisColour.darker(0.2f);
 
 float Constants::BASE_FONT_SIZE = 5.0f;
-float Constants::LINE_SIZE = BASE_FONT_SIZE * 0.3f;
+float Constants::LINE_SIZE = BASE_FONT_SIZE * 0.1f;
 
 float Constants::lineThickness1 = 0.5f;
 float Constants::lineThickness2 = 3.f;
