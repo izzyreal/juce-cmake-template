@@ -13,6 +13,7 @@ PluginEditor::PluginEditor(PluginProcessor& p)
     setWantsKeyboardFocus(true);
 
     setResizable(true, true);
+    getConstrainer()->setFixedAspectRatio(initial_width / initial_height);
     addAndMakeVisible(view);
 #if ENABLE_GUI_INSPECTOR == 1
     inspector = new melatonin::Inspector(*this);
