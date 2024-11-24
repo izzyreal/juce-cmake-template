@@ -172,7 +172,14 @@ void ViewUtil::createComponent(
         }
         else
         {
-            labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour); 
+            if (n.label_style == "dark")
+            {
+                labelComponent = new SimpleLabel(getScale, n.label, Constants::darkLabelColour); 
+            }
+            else
+            {
+                labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour); 
+            }
         }
 
         n.label_component = labelComponent;
