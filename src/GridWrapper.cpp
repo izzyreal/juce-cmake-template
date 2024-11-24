@@ -67,8 +67,12 @@ static void processChildren(
             else
             {
                 const auto drawableBounds = dynamic_cast<SvgComponent*>(component)->getDrawableBounds();
-                width = drawableBounds.getWidth() * scale;
-                height = drawableBounds.getHeight() * scale;
+
+                if (!drawableBounds.isEmpty())
+                {
+                    width = drawableBounds.getWidth() * scale;
+                    height = drawableBounds.getHeight() * scale;
+                }
             }
         }
         else if (c.node_type == "num_key")
