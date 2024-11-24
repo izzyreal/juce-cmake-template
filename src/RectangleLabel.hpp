@@ -46,7 +46,7 @@ class RectangleLabel : public LabelComponent {
             //g.fillAll(juce::Colours::yellow);
             g.setColour(bgColour);
             const auto radiusWithScale = radius * getScale();
-            const auto backgroundVerticalMargin = 3.f;
+            const auto backgroundVerticalMargin = 0.01f;
             const auto requiredHeight = simpleLabel->getRequiredHeight() + backgroundVerticalMargin;
             auto backgroundRect = getLocalBounds();
 

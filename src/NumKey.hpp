@@ -12,7 +12,7 @@ class NumKey : public juce::Component {
         NumKey(const std::function<float()> &getScaleToUse, const std::string topLabelToUse, const std::string bottomLabelToUse, std::string svgPath)
         {
             topLabel = new SimpleLabel(getScaleToUse, topLabelToUse, Constants::darkLabelColour);
-            bottomLabel = new RectangleLabel(getScaleToUse, bottomLabelToUse, bottomLabelToUse, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.f, 2.f);
+            bottomLabel = new RectangleLabel(getScaleToUse, bottomLabelToUse, bottomLabelToUse, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.5f, 2.f);
             svgComponent = new SvgComponent(svgPath);
 
             addAndMakeVisible(topLabel);

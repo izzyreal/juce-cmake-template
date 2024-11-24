@@ -119,7 +119,7 @@ void ViewUtil::createComponent(
         LabelComponent* labelComponent;
         if (n.label_style == "function_key")
         {
-            labelComponent = new RectangleLabel(getScale, n.label, n.label, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.f, 10.f);
+            labelComponent = new RectangleLabel(getScale, n.label, n.label, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.5f, 10.f);
         }
         else
         {
