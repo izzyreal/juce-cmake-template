@@ -179,16 +179,17 @@ void ViewUtil::createComponent(
         {
             labelComponent = new SimpleLabel(getScale, n.label, Constants::betweenChassisAndLabelColour); 
         }
+        else if (n.label_style == "cursor_digit")
+        {
+            labelComponent = new RectangleLabel(getScale, n.label, n.label, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.5f, 10.f);
+        }
+        else if (n.label_style == "dark")
+        {
+            labelComponent = new SimpleLabel(getScale, n.label, Constants::darkLabelColour); 
+        }
         else
         {
-            if (n.label_style == "dark")
-            {
-                labelComponent = new SimpleLabel(getScale, n.label, Constants::darkLabelColour); 
-            }
-            else
-            {
-                labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour); 
-            }
+            labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour);
         }
 
         n.label_component = labelComponent;
