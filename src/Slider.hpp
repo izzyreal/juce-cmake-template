@@ -35,7 +35,7 @@ class Slider : public juce::Component {
             const auto scale = getScale();
             const auto outer_rect = getLocalBounds().toFloat().withTop((Constants::BASE_FONT_SIZE + Constants::LINE_SIZE + 1) * scale);
 
-            const auto line_thickness = std::ceil<float>(Constants::lineThickness1 * scale);
+            const auto line_thickness = Constants::lineThickness1 * scale;
             
             g.drawRoundedRectangle(outer_rect.reduced(line_thickness), 0.4 * scale, line_thickness);
 
