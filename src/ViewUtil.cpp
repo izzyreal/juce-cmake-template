@@ -10,6 +10,7 @@
 #include "Rectangle.hpp"
 #include "Constants.hpp"
 #include "NumKey.hpp"
+#include "Slider.hpp"
 
 #include <fstream>
 
@@ -35,6 +36,7 @@ void ViewUtil::createComponent(
     n.j_or_l_shape_component = nullptr;
     n.rectangle_component = nullptr;
     n.num_key_component = nullptr;
+    n.slider_component = nullptr;
 
     if (n.node_type == "grid")
     {
@@ -103,6 +105,13 @@ void ViewUtil::createComponent(
         components.emplace_back(numKey);
         parent->addAndMakeVisible(components.back());
         n.num_key_component = numKey;
+        return;
+    }
+    else if (n.node_type == "slider")
+    {
+        n.slider_component = new Slider(getScale);
+        parent->addAndMakeVisible(n.slider_component);
+        components.push_back(n.slider_component);
         return;
     }
 
