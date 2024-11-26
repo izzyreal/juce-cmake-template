@@ -70,23 +70,25 @@ static void from_json(const json& j, node& n)
         if (j.contains("justify_items"))    j.at("justify_items").get_to(n.justify_items);
         if (j.contains("width"))            j.at("width").get_to(n.width);
         if (j.contains("aspect_ratio_height")) j.at("aspect_ratio_height").get_to(n.aspect_ratio_height); else n.aspect_ratio_height = 0.f;
+        if (j.contains("hide_svg"))         j.at("hide_svg").get_to(n.hide_svg); else n.hide_svg = false;
+        if (j.contains("shadow_darkness"))  j.at("shadow_darkness").get_to(n.shadow_darkness); else n.shadow_darkness = 0.f;
+        if (j.contains("is_inner_shadow"))  j.at("is_inner_shadow").get_to(n.is_inner_shadow); else n.is_inner_shadow = false;
 
-        if (j.contains("shadow"))
+        if (j.contains("shadow_size"))
         {
-            j.at("shadow").get_to(n.shadow);
+            j.at("shadow_size").get_to(n.shadow_size);
 
-            if (n.shadow > 0.f)
+            if (n.shadow_size > 0.f)
             {
                 for (auto &c : n.children)
                 {
-                    printf("Setting inherited shadow size %f to child '%s'\n", n.shadow, c.name.c_str());
-                    c.shadow = n.shadow;
+                    c.shadow_size = n.shadow_size;
                 }
             }
         }
         else
         {
-            n.shadow = 0.f;
+            n.shadow_size = 0.f;
         }
 
         if (j.contains("label_text_to_calculate_width"))

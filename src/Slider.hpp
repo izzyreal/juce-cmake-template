@@ -50,8 +50,8 @@ class Slider : public juce::Component {
             for (int i = 0; i < 11; i++)
             {
                 const auto y_pos = height - (i * y_interval) - y_offset_bottom;
-                g.drawLine(x_offset, y_pos, line_length + x_offset, y_pos);
-                g.drawLine(width - line_length - x_offset, y_pos, width - x_offset, y_pos);
+                g.drawLine(x_offset, y_pos, line_length + x_offset, y_pos, line_thickness);
+                g.drawLine(width - line_length - x_offset, y_pos, width - x_offset, y_pos, line_thickness);
             }
 
             auto notch_rect = getLocalBounds().toFloat().reduced(width * 0.465, height * 0.205);

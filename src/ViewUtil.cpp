@@ -25,7 +25,7 @@ float ViewUtil::getLabelHeight(const std::string& text, const std::function<floa
 
 static void addShadow(const node &n, const std::function<float()> &getScale, SvgComponent *svgComponent, juce::Component *parent, std::vector<juce::Component*> &components)
 {
-    if (n.shadow == 0.f)
+    if (n.shadow_size == 0.f)
     {
         return;
     }
@@ -34,7 +34,8 @@ static void addShadow(const node &n, const std::function<float()> &getScale, Svg
         return svgComponent->getShadowPath();
     };
 
-    auto shadow = new Shadow(getScale, getShadowPath, n.shadow);
+    const auto shadowDarkness = n.shadow_darkness > 0.f ? n.shadow_darkness : 0.4f;
+    auto shadow = new Shadow(getScale, getShadowPath, n.shadow_size, shadowDarkness, n.is_inner_shadow);
     svgComponent->shadow = shadow;
     components.emplace_back(shadow);
     parent->addAndMakeVisible(shadow);
@@ -121,7 +122,7 @@ void ViewUtil::createComponent(
             else bottomLabel += c;
         }
 
-        const auto numKey = new NumKey(getScale, topLabel, bottomLabel, n.svg, parent, n.shadow);
+        const auto numKey = new NumKey(getScale, topLabel, bottomLabel, n.svg, parent, n.shadow_size);
         addShadow(n, getScale, numKey->getSvgComponent(), parent, components);
         components.push_back(numKey);
         parent->addAndMakeVisible(numKey);
@@ -138,7 +139,7 @@ void ViewUtil::createComponent(
 
     if (!n.svg.empty() && n.label.empty())
     {
-        auto svgComponent = new SvgComponent(n.svg, parent, n.shadow, getScale);
+        auto svgComponent = new SvgComponent(n.svg, parent, n.shadow_size, getScale);
 
         components.emplace_back(svgComponent);
 
@@ -146,6 +147,7 @@ void ViewUtil::createComponent(
 
         parent->addAndMakeVisible(svgComponent);
         n.svg_component = svgComponent;
+        if (n.hide_svg) svgComponent->setVisible(false);
         return;
     }
 
@@ -161,7 +163,7 @@ void ViewUtil::createComponent(
         {
             labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour);
         }
-        auto svgComponent = new SvgComponent(n.svg, parent, n.shadow, getScale);
+        auto svgComponent = new SvgComponent(n.svg, parent, n.shadow_size, getScale);
 
         n.svg_component = svgComponent;
         n.label_component = labelComponent;

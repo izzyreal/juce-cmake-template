@@ -20,7 +20,10 @@ struct node {
     std::string width;
     float aspect_ratio_height;
     std::string label_text_to_calculate_width;
-    float shadow;
+    float shadow_size;
+    float shadow_darkness;
+    bool hide_svg;
+    bool is_inner_shadow;
 
     // grid
     std::vector<uint16_t> row_fractions;
