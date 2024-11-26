@@ -30,7 +30,7 @@ class ViewUtil
         {
             static const float base_size = 25.f;
             static const float base_size_x = base_size;
-            static const float base_size_y = base_size_x * 0.1f;
+            static const float base_size_y = base_size_x * 0.15f;
             const float magic_factor = shadowSize * scale * 0.25f;
             const auto size_x = base_size_x * magic_factor;
             const auto size_y = base_size_y * magic_factor;
