@@ -52,6 +52,7 @@ class SvgComponent : public juce::Component
 
         ~SvgComponent() override
         {
+            commonParentWithShadow->removeComponentListener(parentSizeAndPositionListener);
             delete parentSizeAndPositionListener;
         }
 
