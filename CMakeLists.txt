@@ -23,13 +23,18 @@ FetchContent_Declare(json
 
 FetchContent_Declare (melatonin_inspector
         GIT_REPOSITORY https://github.com/sudara/melatonin_inspector.git
-        GIT_TAG origin/main
+        GIT_TAG main
         SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/melatonin_inspector)
+
+FetchContent_Declare(melatonin_blur
+    GIT_REPOSITORY https://github.com/sudara/melatonin_blur.git
+    GIT_TAG origin/main
+    SOURCE_DIR ${CMAKE_CURRENT_BINARY_DIR}/melatonin_blur)
 
 set (JUCE_COPY_PLUGIN_AFTER_BUILD ON)
 set (JUCE_ENABLE_MODULE_SOURCE_GROUPS ON)
 
-FetchContent_MakeAvailable(JUCE json melatonin_inspector)
+FetchContent_MakeAvailable(JUCE json melatonin_inspector melatonin_blur)
 
 juce_add_plugin(plugin
     BUNDLE_ID org.example.plugin
@@ -64,6 +69,7 @@ target_compile_definitions(plugin PUBLIC
 target_link_libraries(plugin PRIVATE
     nlohmann_json::nlohmann_json
     melatonin_inspector
+    melatonin_blur
     juce::juce_audio_utils
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags

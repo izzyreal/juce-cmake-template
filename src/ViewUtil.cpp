@@ -11,6 +11,8 @@
 #include "Constants.hpp"
 #include "NumKey.hpp"
 #include "Slider.hpp"
+#include "Shadow.hpp"
+#include "juce_graphics/juce_graphics.h"
 
 #include <fstream>
 
@@ -19,6 +21,24 @@ float ViewUtil::getLabelHeight(const std::string& text, const std::function<floa
     const auto newlineCount = (float) std::count(text.begin(), text.end(), '\n');
 
     return ((Constants::BASE_FONT_SIZE * (newlineCount + 1)) + (Constants::LINE_SIZE * newlineCount)) * getScale();
+}
+
+static void addShadow(const node &n, const std::function<float()> &getScale, SvgComponent *svgComponent, juce::Component *parent, std::vector<juce::Component*> &components)
+{
+    if (n.shadow == 0.f)
+    {
+        return;
+    }
+
+    const auto getShadowPath = [svgComponent] () -> juce::Path {
+        return svgComponent->getShadowPath();
+    };
+
+    auto shadow = new Shadow(getScale, getShadowPath, n.shadow);
+    svgComponent->shadow = shadow;
+    components.emplace_back(shadow);
+    parent->addAndMakeVisible(shadow);
+
 }
 
 void ViewUtil::createComponent(
@@ -83,7 +103,7 @@ void ViewUtil::createComponent(
     {
         std::string topLabel;
         std::string bottomLabel;
-        
+
         bool doingTop = true;
 
         for (auto c : n.label)
@@ -101,9 +121,10 @@ void ViewUtil::createComponent(
             else bottomLabel += c;
         }
 
-        const auto numKey = new NumKey(getScale, topLabel, bottomLabel, n.svg);
-        components.emplace_back(numKey);
-        parent->addAndMakeVisible(components.back());
+        const auto numKey = new NumKey(getScale, topLabel, bottomLabel, n.svg, parent);
+        addShadow(n, getScale, numKey->getSvgComponent(), parent, components);
+        components.push_back(numKey);
+        parent->addAndMakeVisible(numKey);
         n.num_key_component = numKey;
         return;
     }
@@ -117,15 +138,21 @@ void ViewUtil::createComponent(
 
     if (!n.svg.empty() && n.label.empty())
     {
-        components.emplace_back(new SvgComponent(n.svg));
-        parent->addAndMakeVisible(components.back());
-        n.svg_component = components.back();
+        auto svgComponent = new SvgComponent(n.svg, parent);
+
+        components.emplace_back(svgComponent);
+
+        addShadow(n, getScale, svgComponent, parent, components);
+
+        parent->addAndMakeVisible(svgComponent);
+        n.svg_component = svgComponent;
         return;
     }
 
     if (!n.svg.empty() && !n.label.empty())
     {
         LabelComponent* labelComponent;
+
         if (n.label_style == "function_key")
         {
             labelComponent = new RectangleLabel(getScale, n.label, n.label, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.5f, 10.f);
@@ -134,7 +161,7 @@ void ViewUtil::createComponent(
         {
             labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour);
         }
-        auto svgComponent = new SvgComponent(n.svg);
+        auto svgComponent = new SvgComponent(n.svg, parent);
 
         n.svg_component = svgComponent;
         n.label_component = labelComponent;
@@ -148,6 +175,8 @@ void ViewUtil::createComponent(
             svgWithLabelGrid->components.push_back(svgComponent);
 
             components.push_back(svgWithLabelGrid);
+            
+            addShadow(n, getScale, svgComponent, parent, components);
 
             parent->addAndMakeVisible(svgWithLabelGrid);
             n.svg_with_label_grid_component = svgWithLabelGrid;
@@ -160,6 +189,8 @@ void ViewUtil::createComponent(
             components.push_back(labelComponent);
             parent->addAndMakeVisible(labelComponent);
         }
+       
+
         return;
     }
 
@@ -223,7 +254,7 @@ juce::Font& ViewUtil::getFont(const float scale)
     }
 
     font.setHeight(Constants::BASE_FONT_SIZE * scale);
-    
+
     return font;
 }
 
