@@ -121,7 +121,7 @@ void ViewUtil::createComponent(
             else bottomLabel += c;
         }
 
-        const auto numKey = new NumKey(getScale, topLabel, bottomLabel, n.svg, parent);
+        const auto numKey = new NumKey(getScale, topLabel, bottomLabel, n.svg, parent, n.shadow);
         addShadow(n, getScale, numKey->getSvgComponent(), parent, components);
         components.push_back(numKey);
         parent->addAndMakeVisible(numKey);
@@ -138,7 +138,7 @@ void ViewUtil::createComponent(
 
     if (!n.svg.empty() && n.label.empty())
     {
-        auto svgComponent = new SvgComponent(n.svg, parent);
+        auto svgComponent = new SvgComponent(n.svg, parent, n.shadow, getScale);
 
         components.emplace_back(svgComponent);
 
@@ -161,7 +161,7 @@ void ViewUtil::createComponent(
         {
             labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour);
         }
-        auto svgComponent = new SvgComponent(n.svg, parent);
+        auto svgComponent = new SvgComponent(n.svg, parent, n.shadow, getScale);
 
         n.svg_component = svgComponent;
         n.label_component = labelComponent;

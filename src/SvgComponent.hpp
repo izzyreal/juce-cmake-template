@@ -6,6 +6,8 @@
 
 #include <cassert>
 
+#include "ViewUtil.hpp"
+
 class SvgComponent : public juce::Component
 {
     private:
@@ -29,8 +31,8 @@ class SvgComponent : public juce::Component
         }
 
     public:
-        SvgComponent(std::string svg_path, juce::Component *commonParentWithShadowToUse)
-            : commonParentWithShadow(commonParentWithShadowToUse)
+        SvgComponent(std::string svg_path, juce::Component *commonParentWithShadowToUse, const float shadowSizeToUse, const std::function<float()> &getScaleToUse)
+            : commonParentWithShadow(commonParentWithShadowToUse), shadowSize(shadowSizeToUse), getScale(getScaleToUse)
         {
             loadSvgFile(juce::File("/Users/izmar/projects/VMPC2000XL/vector UI/views/" + svg_path));
 
@@ -91,10 +93,8 @@ class SvgComponent : public juce::Component
             auto relativeTopLeft = commonParentWithShadow->getLocalPoint(nullptr, globalTopLeft);
             juce::Rectangle<int> boundsInCommonParent(relativeTopLeft.x, relativeTopLeft.y, getWidth(), getHeight()); 
 
-            // Expand either by a fixed number that covers the biggest of shadows, or let each shadow expand
-            // only what is necessary given its radius, offset and spread. For now, we just use a really big
-            // number to cover the biggest of shadows.
-            boundsInCommonParent.expand(25.f, 25.f);
+            const auto shadowDimensions = ViewUtil::getShadowDimensions(shadowSize, getScale());
+            boundsInCommonParent.expand(shadowDimensions.x, shadowDimensions.y);
 
             shadow->setBounds(boundsInCommonParent);
         }
@@ -110,6 +110,8 @@ class SvgComponent : public juce::Component
         juce::Colour randomColor;
         juce::Component *commonParentWithShadow = nullptr;
         juce::ComponentListener *parentSizeAndPositionListener = nullptr;
+        const float shadowSize;
+        const std::function<float()> &getScale;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SvgComponent)
 };
