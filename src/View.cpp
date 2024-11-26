@@ -3,7 +3,6 @@
 #include "GridWrapper.hpp"
 #include "FlexBoxWrapper.hpp"
 #include "ViewUtil.hpp"
-#include "Constants.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -70,6 +69,24 @@ static void from_json(const json& j, node& n)
         if (j.contains("justify_items"))    j.at("justify_items").get_to(n.justify_items);
         if (j.contains("width"))            j.at("width").get_to(n.width);
         if (j.contains("aspect_ratio_height")) j.at("aspect_ratio_height").get_to(n.aspect_ratio_height); else n.aspect_ratio_height = 0.f;
+
+        if (j.contains("shadow"))
+        {
+            j.at("shadow").get_to(n.shadow);
+
+            if (n.shadow > 0.f)
+            {
+                for (auto &c : n.children)
+                {
+                    printf("Setting inherited shadow size %f to child '%s'\n", n.shadow, c.name.c_str());
+                    c.shadow = n.shadow;
+                }
+            }
+        }
+        else
+        {
+            n.shadow = 0.f;
+        }
 
         if (j.contains("label_text_to_calculate_width"))
         {

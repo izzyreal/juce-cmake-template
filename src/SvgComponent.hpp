@@ -1,7 +1,10 @@
 #pragma once
 
+#include "juce_graphics/juce_graphics.h"
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_core/juce_core.h>
+
+#include <cassert>
 
 class SvgComponent : public juce::Component
 {
@@ -19,14 +22,15 @@ class SvgComponent : public juce::Component
                     svgDrawable->getDrawableBounds();
                     svgFile = f;
                     randomColor = juce::Colour::fromRGB(juce::String(svgFile.getFileName()).hashCode() & 0xFF,
-                                          (juce::String(svgFile.getFileName()).hashCode() >> 8) & 0xFF,
-                                          (juce::String(svgFile.getFileName()).hashCode() >> 16) & 0xFF);
+                            (juce::String(svgFile.getFileName()).hashCode() >> 8) & 0xFF,
+                            (juce::String(svgFile.getFileName()).hashCode() >> 16) & 0xFF);
                 }
             }
         }
 
     public:
-        SvgComponent(std::string svg_path)
+        SvgComponent(std::string svg_path, juce::Component *commonParentWithShadowToUse)
+            : commonParentWithShadow(commonParentWithShadowToUse)
         {
             loadSvgFile(juce::File("/Users/izmar/projects/VMPC2000XL/vector UI/views/" + svg_path));
         }
@@ -34,6 +38,17 @@ class SvgComponent : public juce::Component
         juce::Rectangle<float> getDrawableBounds()
         {
             return svgDrawable == nullptr ? juce::Rectangle<float>() : svgDrawable->getDrawableBounds();
+        }
+
+        juce::Path getShadowPath()
+        {
+            if (svgDrawable == nullptr) return juce::Path();
+
+            juce::Path shadowPath = svgDrawable->getOutlineAsPath();
+            auto centred = juce::RectanglePlacement(juce::RectanglePlacement::centred);
+            auto transform = centred.getTransformToFit(getDrawableBounds(), getLocalBounds().toFloat());
+            shadowPath.applyTransform(transform);
+            return shadowPath;
         }
 
         void paint(juce::Graphics& g) override
@@ -48,10 +63,29 @@ class SvgComponent : public juce::Component
             svgDrawable->drawWithin(g, getLocalBounds().toFloat(), juce::RectanglePlacement::centred, 1.0f);
         }
 
+        juce::Component *shadow = nullptr;
+
+        void resized() override
+        {
+            if (shadow == nullptr) return;
+            
+            auto globalTopLeft = localPointToGlobal(juce::Point<int>(0, 0));
+            auto relativeTopLeft = commonParentWithShadow->getLocalPoint(nullptr, globalTopLeft);
+            juce::Rectangle<int> boundsInCommonParent(relativeTopLeft.x, relativeTopLeft.y, getWidth(), getHeight()); 
+
+            // Expand either by a fixed number that covers the biggest of shadows, or let each shadow expand
+            // only what is necessary given its radius, offset and spread. For now, we just use a really big
+            // number to cover the biggest of shadows.
+            boundsInCommonParent.expand(25.f, 25.f);
+
+            shadow->setBounds(boundsInCommonParent);
+        }
+
     private:
         juce::File svgFile;
         std::unique_ptr<juce::Drawable> svgDrawable;
         juce::Colour randomColor;
+        juce::Component *commonParentWithShadow = nullptr;
 
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SvgComponent)
 };

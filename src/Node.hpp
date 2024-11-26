@@ -20,6 +20,7 @@ struct node {
     std::string width;
     float aspect_ratio_height;
     std::string label_text_to_calculate_width;
+    float shadow;
 
     // grid
     std::vector<uint16_t> row_fractions;
