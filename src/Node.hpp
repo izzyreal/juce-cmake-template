@@ -42,4 +42,5 @@ struct node {
     juce::Component *rectangle_component;
     juce::Component *num_key_component;
     juce::Component *slider_component;
+    juce::Component *data_wheel_component;
 };

@@ -3,6 +3,7 @@
 #include "FlexBoxWrapper.hpp"
 #include "LabelComponent.hpp"
 #include "SvgComponent.hpp"
+#include "DataWheel.hpp"
 
 #include <cassert>
 
@@ -51,6 +52,12 @@ static void processChildren(
         else if (c.node_type == "slider")
         {
             component = c.slider_component;
+        }
+        else if (c.node_type == "data_wheel")
+        {
+            component = c.data_wheel_component;
+            const auto drawableBounds = dynamic_cast<DataWheel*>(c.data_wheel_component)->getDrawableBounds();
+            width = drawableBounds.getWidth() * scale;
         }
         else if (c.svg_with_label_grid_component != nullptr)
         {

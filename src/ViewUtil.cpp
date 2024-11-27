@@ -12,7 +12,7 @@
 #include "NumKey.hpp"
 #include "Slider.hpp"
 #include "Shadow.hpp"
-#include "juce_graphics/juce_graphics.h"
+#include "DataWheel.hpp"
 
 #include <fstream>
 
@@ -58,6 +58,7 @@ void ViewUtil::createComponent(
     n.rectangle_component = nullptr;
     n.num_key_component = nullptr;
     n.slider_component = nullptr;
+    n.data_wheel_component = nullptr;
 
     if (n.node_type == "grid")
     {
@@ -134,6 +135,15 @@ void ViewUtil::createComponent(
         n.slider_component = new Slider(getScale);
         parent->addAndMakeVisible(n.slider_component);
         components.push_back(n.slider_component);
+        return;
+    }
+    else if (n.node_type == "data_wheel")
+    {
+        auto dataWheel = new DataWheel(parent, n.shadow_size, getScale);
+        addShadow(n, getScale, dataWheel->backgroundSvg, parent, components);
+        n.data_wheel_component = dataWheel;
+        parent->addAndMakeVisible(dataWheel);
+        components.push_back(dataWheel);
         return;
     }
 
