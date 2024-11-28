@@ -3,6 +3,7 @@
 #include "RectangleLabel.hpp"
 #include "Constants.hpp"
 #include "SvgComponent.hpp"
+#include "SliderCap.hpp"
 
 class Slider : public juce::Component {
     public:
@@ -12,7 +13,7 @@ class Slider : public juce::Component {
             rectangleLabel = new RectangleLabel(getScaleToUse, "NOTE\nVARIATION", "VARIATION", Constants::chassisColour, Constants::labelColour, 0.f, 7.f);
             addAndMakeVisible(rectangleLabel);
 
-            sliderCapSvg = new SvgComponent("slider_cap.svg", commonParentWithShadowToUse, shadowSize, getScale);
+            sliderCapSvg = new SliderCap(commonParentWithShadowToUse, shadowSize, getScale);
             addAndMakeVisible(sliderCapSvg);
             sliderCapSvg->setInterceptsMouseClicks(false, false);
         }
@@ -35,6 +36,7 @@ class Slider : public juce::Component {
             const auto sliderYPos  = (sliderEnd - sliderStart) * sliderYPosFraction;
 
             sliderCapSvg->setBounds((getWidth() - width) / 2, sliderStart + sliderYPos, width, height);
+            dynamic_cast<SliderCap*>(sliderCapSvg)->setFactor(sliderYPosFraction);
             repaint();
         }
         
