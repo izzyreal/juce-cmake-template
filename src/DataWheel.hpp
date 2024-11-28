@@ -22,6 +22,10 @@ class DataWheel : public juce::Component {
 
             dimpleSvg = new SvgComponent("data_wheel_dimple.svg", commonParentWithShadow, 0.f, getScale);
             addAndMakeVisible(dimpleSvg);
+
+            backgroundSvg->setInterceptsMouseClicks(false, false);
+            lines->setInterceptsMouseClicks(false, false);
+            dimpleSvg->setInterceptsMouseClicks(false, false);
         }
 
         ~DataWheel() override
@@ -57,9 +61,30 @@ class DataWheel : public juce::Component {
             repaint();
         }
 
+        void mouseUp(const juce::MouseEvent &) override
+        {
+            previousDragDistanceY = std::numeric_limits<float>::max();
+        }
+
+        void mouseDrag(const juce::MouseEvent &e) override
+        {
+            if (previousDragDistanceY == std::numeric_limits<float>::max())
+            {
+                previousDragDistanceY = 0.f;
+            }
+            
+            const auto distanceToProcessInPixels = e.getDistanceFromDragStartY() - previousDragDistanceY;
+            previousDragDistanceY = e.getDistanceFromDragStartY();
+            const auto fractionToAdd = distanceToProcessInPixels / getWidth();
+            
+            angle = fmod(angle + fractionToAdd, juce::MathConstants<float>::twoPi);
+            
+            handleAngleChanged();
+        }
+
         void mouseWheelMove(const juce::MouseEvent &e, const juce::MouseWheelDetails &wheel) override
         {
-            angle += wheel.deltaY;
+            angle = fmod(angle + wheel.deltaY, juce::MathConstants<float>::twoPi);
             handleAngleChanged();
         }
 
@@ -79,4 +104,5 @@ class DataWheel : public juce::Component {
         const float shadowSize;
         const std::function<float()> &getScale;
         float angle = 0.f;
+        float previousDragDistanceY = std::numeric_limits<float>::max();
 };

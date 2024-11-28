@@ -14,6 +14,7 @@ class Slider : public juce::Component {
 
             sliderCapSvg = new SvgComponent("slider_cap.svg", commonParentWithShadowToUse, 5, getScale);
             addAndMakeVisible(sliderCapSvg);
+            sliderCapSvg->setInterceptsMouseClicks(false, false);
         }
         
         ~Slider() override
@@ -40,6 +41,46 @@ class Slider : public juce::Component {
         void mouseWheelMove(const juce::MouseEvent &, const juce::MouseWheelDetails &m) override
         {
             sliderYPosFraction += m.deltaY;
+            sliderYPosFraction = std::clamp<float>(sliderYPosFraction, 0, 1);
+            handleSliderYPosChanged();
+        }
+
+        void mouseDown(const juce::MouseEvent &e) override
+        {
+            const auto pos = e.getMouseDownScreenPosition();
+
+            if (sliderCapSvg->getScreenBounds().contains(pos))
+            {
+                shouldDragCap = true;
+            }
+        }
+
+        void mouseUp(const juce::MouseEvent &) override
+        {
+            previousDragDistanceY = std::numeric_limits<float>::max();
+            shouldDragCap = false;
+        }
+
+        void mouseDrag(const juce::MouseEvent &e) override
+        {
+            if (!shouldDragCap)
+            {
+                return;
+            }
+
+            if (previousDragDistanceY == std::numeric_limits<float>::max())
+            {
+                previousDragDistanceY = 0.f;
+            }
+            
+            const auto sliderStart = getHeight() * 0.34f;
+            const auto sliderEnd   = getHeight() * 0.84f;
+            const auto sliderLengthInPixels  = sliderEnd - sliderStart;
+
+            const auto distanceToProcessInPixels = e.getDistanceFromDragStartY() - previousDragDistanceY;
+            previousDragDistanceY = e.getDistanceFromDragStartY();
+            const auto fractionToAdd = distanceToProcessInPixels / sliderLengthInPixels;
+            sliderYPosFraction += fractionToAdd;
             sliderYPosFraction = std::clamp<float>(sliderYPosFraction, 0, 1);
             handleSliderYPosChanged();
         }
@@ -95,4 +136,6 @@ class Slider : public juce::Component {
         const std::function<float()> &getScale;
         SvgComponent *sliderCapSvg = nullptr;
         float sliderYPosFraction = 0.f;
+        float previousDragDistanceY = std::numeric_limits<float>::max();
+        bool shouldDragCap = false;
 };
