@@ -13,6 +13,7 @@
 #include "Slider.hpp"
 #include "Shadow.hpp"
 #include "DataWheel.hpp"
+#include "Knob.hpp"
 
 #include <fstream>
 
@@ -132,7 +133,9 @@ void ViewUtil::createComponent(
     }
     else if (n.node_type == "slider")
     {
-        n.slider_component = new Slider(parent, getScale);
+        auto slider = new Slider(parent, getScale, n.shadow_size);
+        n.slider_component = slider;
+        addShadow(n, getScale, slider->sliderCapSvg, parent, components);
         parent->addAndMakeVisible(n.slider_component);
         components.push_back(n.slider_component);
         return;
@@ -173,7 +176,21 @@ void ViewUtil::createComponent(
         {
             labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour);
         }
-        auto svgComponent = new SvgComponent(n.svg, parent, n.shadow_size, getScale);
+
+        SvgComponent *svgComponent;
+
+        if (n.name == "rec_gain")
+        {
+            svgComponent = new Knob(Knob::KnobType::REC_GAIN, parent, getScale);
+        }
+        else if (n.name == "main_volume")
+        {
+            svgComponent = new Knob(Knob::KnobType::MAIN_VOLUME, parent, getScale);
+        }
+        else
+        {
+            svgComponent = new SvgComponent(n.svg, parent, n.shadow_size, getScale);
+        }
 
         n.svg_component = svgComponent;
         n.label_component = labelComponent;

@@ -28,9 +28,9 @@ class ViewUtil
 
         static juce::Point<int> getShadowDimensions(const float shadowSize, const float scale)
         {
-            static const float base_size = 25.f;
+            static const float base_size = 8.f;
             static const float base_size_x = base_size;
-            static const float base_size_y = base_size_x * 0.15f;
+            static const float base_size_y = base_size_x * 0.7f;
             const float magic_factor = shadowSize * scale * 0.25f;
             const auto size_x = base_size_x * magic_factor;
             const auto size_y = base_size_y * magic_factor;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include <functional>
 #include <juce_gui_basics/juce_gui_basics.h>
 
 #include "SvgComponent.hpp"
@@ -63,28 +64,31 @@ class DataWheel : public juce::Component {
 
         void mouseUp(const juce::MouseEvent &) override
         {
-            previousDragDistanceY = std::numeric_limits<float>::max();
+            previousDragDistanceY = std::numeric_limits<int32_t>::max();
         }
 
         void mouseDrag(const juce::MouseEvent &e) override
         {
-            if (previousDragDistanceY == std::numeric_limits<float>::max())
+            if (previousDragDistanceY == std::numeric_limits<int32_t>::max())
             {
-                previousDragDistanceY = 0.f;
+                previousDragDistanceY = 0;
             }
             
             const auto distanceToProcessInPixels = e.getDistanceFromDragStartY() - previousDragDistanceY;
             previousDragDistanceY = e.getDistanceFromDragStartY();
-            const auto fractionToAdd = distanceToProcessInPixels / getWidth();
+
+            const auto fractionToAdd = -((float) distanceToProcessInPixels / getWidth());
             
-            angle = fmod(angle + fractionToAdd, juce::MathConstants<float>::twoPi);
+            angle = fmod(angle + (float) fractionToAdd, juce::MathConstants<float>::twoPi);
             
             handleAngleChanged();
         }
 
         void mouseWheelMove(const juce::MouseEvent &e, const juce::MouseWheelDetails &wheel) override
         {
-            angle = fmod(angle + wheel.deltaY, juce::MathConstants<float>::twoPi);
+            const auto increment = -wheel.deltaY;
+
+            angle = fmod(angle + increment, juce::MathConstants<float>::twoPi);
             handleAngleChanged();
         }
 
@@ -104,5 +108,5 @@ class DataWheel : public juce::Component {
         const float shadowSize;
         const std::function<float()> &getScale;
         float angle = 0.f;
-        float previousDragDistanceY = std::numeric_limits<float>::max();
+        int32_t previousDragDistanceY = std::numeric_limits<int32_t>::max();
 };

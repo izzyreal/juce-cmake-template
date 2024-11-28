@@ -6,13 +6,13 @@
 
 class Slider : public juce::Component {
     public:
-        Slider(juce::Component *commonParentWithShadowToUse, const std::function<float()> &getScaleToUse)
+        Slider(juce::Component *commonParentWithShadowToUse, const std::function<float()> &getScaleToUse, const float shadowSize)
             : getScale(getScaleToUse)
         {
             rectangleLabel = new RectangleLabel(getScaleToUse, "NOTE\nVARIATION", "VARIATION", Constants::chassisColour, Constants::labelColour, 0.f, 7.f);
             addAndMakeVisible(rectangleLabel);
 
-            sliderCapSvg = new SvgComponent("slider_cap.svg", commonParentWithShadowToUse, 5, getScale);
+            sliderCapSvg = new SvgComponent("slider_cap.svg", commonParentWithShadowToUse, shadowSize, getScale);
             addAndMakeVisible(sliderCapSvg);
             sliderCapSvg->setInterceptsMouseClicks(false, false);
         }
@@ -57,7 +57,7 @@ class Slider : public juce::Component {
 
         void mouseUp(const juce::MouseEvent &) override
         {
-            previousDragDistanceY = std::numeric_limits<float>::max();
+            previousDragDistanceY = std::numeric_limits<int32_t>::max();
             shouldDragCap = false;
         }
 
@@ -68,9 +68,9 @@ class Slider : public juce::Component {
                 return;
             }
 
-            if (previousDragDistanceY == std::numeric_limits<float>::max())
+            if (previousDragDistanceY == std::numeric_limits<int32_t>::max())
             {
-                previousDragDistanceY = 0.f;
+                previousDragDistanceY = 0;
             }
             
             const auto sliderStart = getHeight() * 0.34f;
@@ -79,7 +79,7 @@ class Slider : public juce::Component {
 
             const auto distanceToProcessInPixels = e.getDistanceFromDragStartY() - previousDragDistanceY;
             previousDragDistanceY = e.getDistanceFromDragStartY();
-            const auto fractionToAdd = distanceToProcessInPixels / sliderLengthInPixels;
+            const auto fractionToAdd = (float) distanceToProcessInPixels / sliderLengthInPixels;
             sliderYPosFraction += fractionToAdd;
             sliderYPosFraction = std::clamp<float>(sliderYPosFraction, 0, 1);
             handleSliderYPosChanged();
@@ -131,11 +131,12 @@ class Slider : public juce::Component {
             g.fillRoundedRectangle(notch_rect, 0.4f * scale);
         }
 
+        SvgComponent *sliderCapSvg = nullptr;
+
     private:
         RectangleLabel *rectangleLabel = nullptr;
         const std::function<float()> &getScale;
-        SvgComponent *sliderCapSvg = nullptr;
         float sliderYPosFraction = 0.f;
-        float previousDragDistanceY = std::numeric_limits<float>::max();
+        int32_t previousDragDistanceY = std::numeric_limits<int32_t>::max();
         bool shouldDragCap = false;
 };

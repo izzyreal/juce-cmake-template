@@ -105,9 +105,16 @@ class SvgComponent : public juce::Component
             syncShadowSiblingSizeAndPosition();
         }
 
+        void moved() override
+        {
+            syncShadowSiblingSizeAndPosition();
+        }
+
+    protected:
+        std::unique_ptr<juce::Drawable> svgDrawable;
+
     private:
         juce::File svgFile;
-        std::unique_ptr<juce::Drawable> svgDrawable;
         juce::Colour randomColor;
         juce::Component *commonParentWithShadow = nullptr;
         juce::ComponentListener *parentSizeAndPositionListener = nullptr;
