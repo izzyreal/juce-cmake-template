@@ -2,19 +2,46 @@
 
 #include "RectangleLabel.hpp"
 #include "Constants.hpp"
+#include "SvgComponent.hpp"
 
 class Slider : public juce::Component {
     public:
-        Slider(const std::function<float()> &getScaleToUse)
+        Slider(juce::Component *commonParentWithShadowToUse, const std::function<float()> &getScaleToUse)
             : getScale(getScaleToUse)
         {
             rectangleLabel = new RectangleLabel(getScaleToUse, "NOTE\nVARIATION", "VARIATION", Constants::chassisColour, Constants::labelColour, 0.f, 7.f);
             addAndMakeVisible(rectangleLabel);
+
+            sliderCapSvg = new SvgComponent("slider_cap.svg", commonParentWithShadowToUse, 5, getScale);
+            addAndMakeVisible(sliderCapSvg);
         }
         
         ~Slider() override
         {
             delete rectangleLabel;
+            delete sliderCapSvg;
+        }
+
+        void handleSliderYPosChanged()
+        {
+            const auto drawableBounds = sliderCapSvg->getDrawableBounds();
+            const auto scale = getScale();
+            const auto width = drawableBounds.getWidth() * scale;
+            const auto height = drawableBounds.getHeight() * scale;
+
+            const auto sliderStart = getHeight() * 0.34f;
+            const auto sliderEnd   = getHeight() * 0.84f;
+            const auto sliderYPos  = (sliderEnd - sliderStart) * sliderYPosFraction;
+
+            sliderCapSvg->setBounds((getWidth() - width) / 2, sliderStart + sliderYPos, width, height);
+            repaint();
+        }
+        
+        void mouseWheelMove(const juce::MouseEvent &, const juce::MouseWheelDetails &m) override
+        {
+            sliderYPosFraction += m.deltaY;
+            sliderYPosFraction = std::clamp<float>(sliderYPosFraction, 0, 1);
+            handleSliderYPosChanged();
         }
 
         void resized() override
@@ -26,6 +53,7 @@ class Slider : public juce::Component {
             grid.items.add(juce::GridItem(rectangleLabel).withArea(1, 1, 1, 1));
 
             grid.performLayout(getLocalBounds());
+            handleSliderYPosChanged();
         }
 
         void paint(juce::Graphics &g) override
@@ -60,11 +88,11 @@ class Slider : public juce::Component {
             g.setColour(juce::Colours::black);
             g.drawRoundedRectangle(notch_rect, 0.4f * scale, 1.f);
             g.fillRoundedRectangle(notch_rect, 0.4f * scale);
-
-            Component::paint(g);
         }
 
     private:
         RectangleLabel *rectangleLabel = nullptr;
         const std::function<float()> &getScale;
+        SvgComponent *sliderCapSvg = nullptr;
+        float sliderYPosFraction = 0.f;
 };

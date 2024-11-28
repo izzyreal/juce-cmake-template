@@ -132,7 +132,7 @@ void ViewUtil::createComponent(
     }
     else if (n.node_type == "slider")
     {
-        n.slider_component = new Slider(getScale);
+        n.slider_component = new Slider(parent, getScale);
         parent->addAndMakeVisible(n.slider_component);
         components.push_back(n.slider_component);
         return;
