@@ -3,7 +3,6 @@
 #include "GridWrapper.hpp"
 #include "FlexBoxWrapper.hpp"
 #include "ViewUtil.hpp"
-#include "Constants.hpp"
 
 #include <nlohmann/json.hpp>
 

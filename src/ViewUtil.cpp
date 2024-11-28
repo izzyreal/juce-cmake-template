@@ -14,6 +14,7 @@
 #include "Shadow.hpp"
 #include "DataWheel.hpp"
 #include "Knob.hpp"
+#include "Lcd.hpp"
 
 #include <fstream>
 
@@ -60,6 +61,7 @@ void ViewUtil::createComponent(
     n.num_key_component = nullptr;
     n.slider_component = nullptr;
     n.data_wheel_component = nullptr;
+    n.lcd_component = nullptr;
 
     if (n.node_type == "grid")
     {
@@ -94,9 +96,9 @@ void ViewUtil::createComponent(
         n.j_or_l_shape_component = components.back();
         return;
     }
-    else if (n.node_type == "face_paint_grey_rectangle" || n.node_type == "chassis_rectangle")
+    else if (n.node_type == "face_paint_grey_rectangle" || n.node_type == "chassis_rectangle" || n.node_type == "lcd_rectangle")
     {
-        const auto rectangle = new Rectangle(n.node_type == "chassis_rectangle" ? Constants::chassisColour : Constants::greyFacePaintColour);
+        const auto rectangle = new Rectangle(n.node_type == "chassis_rectangle" ? Constants::chassisColour : n.node_type == "lcd_rectangle" ? Constants::lcdOff : Constants::greyFacePaintColour);
         components.emplace_back(rectangle);
         parent->addAndMakeVisible(components.back());
         n.rectangle_component = rectangle;
@@ -147,6 +149,14 @@ void ViewUtil::createComponent(
         n.data_wheel_component = dataWheel;
         parent->addAndMakeVisible(dataWheel);
         components.push_back(dataWheel);
+        return;
+    }
+    else if (n.node_type == "lcd")
+    {
+        auto lcd = new Lcd();
+        n.lcd_component = lcd;
+        parent->addAndMakeVisible(lcd);
+        components.push_back(lcd);
         return;
     }
 

@@ -45,7 +45,7 @@ static void processChildren(
         {
             component = c.j_or_l_shape_component;
         }
-        else if (c.node_type == "face_paint_grey_rectangle" || c.node_type == "chassis_rectangle")
+        else if (c.node_type == "face_paint_grey_rectangle" || c.node_type == "chassis_rectangle" || c.node_type == "lcd_rectangle")
         {
             component = c.rectangle_component;
         }
@@ -58,6 +58,10 @@ static void processChildren(
             component = c.data_wheel_component;
             const auto drawableBounds = dynamic_cast<DataWheel*>(c.data_wheel_component)->getDrawableBounds();
             width = drawableBounds.getWidth() * scale;
+        }
+        else if (c.node_type == "lcd")
+        {
+            component = c.lcd_component;
         }
         else if (c.svg_with_label_grid_component != nullptr)
         {
