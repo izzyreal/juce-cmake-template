@@ -20,5 +20,5 @@ private:
     View* view = nullptr;
     const float initial_width =  445.f;
     const float initial_height = 342.f;
-    const float initial_scale = 2.0f - 0.1f;
+    const float initial_scale = (2.0f - 0.1f) * 1.3f;
 };
