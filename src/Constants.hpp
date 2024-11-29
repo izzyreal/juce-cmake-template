@@ -13,6 +13,7 @@ class Constants {
         static juce::Colour lcdOn;
         static juce::Colour lcdOnLight;
         static juce::Colour lcdOff;
+        static juce::Colour lcdOffBacklit;
 
         static float BASE_FONT_SIZE;
         static float LINE_SIZE;

@@ -8,9 +8,10 @@ juce::Colour Constants::darkLabelColour = labelColour.darker();
 juce::Colour Constants::greyFacePaintColour = juce::Colour::fromRGB(139, 151, 163);
 juce::Colour Constants::betweenChassisAndLabelColour = chassisColour.darker(0.2f);
 
-juce::Colour Constants::lcdOn = juce::Colour::fromRGB(86, 61, 145);
+juce::Colour Constants::lcdOn = juce::Colour::fromRGB(86, 61, 135).darker();
 juce::Colour Constants::lcdOnLight = Constants::lcdOn.brighter(0.8f);
-juce::Colour Constants::lcdOff = juce::Colour::fromRGB(170, 248, 218);
+juce::Colour Constants::lcdOffBacklit = juce::Colour::fromRGB(170, 225, 180).brighter(10.f);
+juce::Colour Constants::lcdOff = lcdOffBacklit/*.darker(0.4f)*/;
 
 float Constants::BASE_FONT_SIZE = 5.0f;
 float Constants::LINE_SIZE = BASE_FONT_SIZE * 0.1f;

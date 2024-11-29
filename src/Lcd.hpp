@@ -9,7 +9,7 @@ class Lcd : public juce::Component, juce::Timer {
     public:
         Lcd()
         {
-            startTimer(20);
+            startTimer(50);
         }
 
         void timerCallback() override
@@ -20,7 +20,7 @@ class Lcd : public juce::Component, juce::Timer {
 
         void paint(juce::Graphics &g) override
         {
-
+            g.setImageResamplingQuality(juce::Graphics::highResamplingQuality);
             std::vector<std::vector<bool>> rawPixels(60, std::vector<bool>(248));
             fillFrame(rawPixels);
             juce::Path p;
@@ -31,7 +31,7 @@ class Lcd : public juce::Component, juce::Timer {
                 for (uint8_t x = 0; x < 248; x++)
                 {
                     //const bool on = y == 0 || y == 59 || x == 0 || x == 247;
-                    const bool on = rawPixels[y][x] || (x >= frame && x <= frame + 47 && y >= 5 && y <= 47);
+                    const bool on = rawPixels[y][x] || (false && x >= frame && x <= frame + 47 && y >= 5 && y <= 47);
                     drawLcdPixel(img, x, y, on);
                     if (!on) p.addRectangle(x, y, 1, 1);
                 }
@@ -39,14 +39,13 @@ class Lcd : public juce::Component, juce::Timer {
 
             g.drawImage(img, getLocalBounds().toFloat());
 
-            auto color = juce::Colours::white.withAlpha(1.0f);
-            int radius = 2;
+            auto color = Constants::lcdOffBacklit.brighter(10.f).withAlpha(0.6f); 
+            int radius = getWidth() / 128.f;
             juce::Point<int> offset = { 0, 0 };
-            int spread = 1;
+            int spread = 0;
             melatonin::DropShadow shadow = { color, radius, offset, spread };
             p.applyTransform(juce::AffineTransform().scaled(getWidth() / (248.f), getHeight() / (60.f)));
-            setPaintingIsUnclipped(true);
-            shadow.render(g, p);
+            //shadow.render(g, p);
         }
 
     private:
@@ -54,8 +53,8 @@ class Lcd : public juce::Component, juce::Timer {
 
         void drawLcdPixel(juce::Image &img, const uint8_t lcdX, const uint8_t lcdY, const bool on)
         {
-            const juce::Colour c1 = on ? Constants::lcdOn : Constants::lcdOff;
-            const juce::Colour c2 = on ? Constants::lcdOnLight : Constants::lcdOff;
+            const juce::Colour c1 = on ? Constants::lcdOn : Constants::lcdOffBacklit;
+            const juce::Colour c2 = on ? Constants::lcdOnLight : Constants::lcdOffBacklit;
             img.setPixelAt(lcdX*2, lcdY*2, c1);
             img.setPixelAt(lcdX*2 + 1, lcdY*2, c2);
             img.setPixelAt(lcdX*2 + 1, lcdY*2 + 1, c2);
