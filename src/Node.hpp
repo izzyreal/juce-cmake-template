@@ -24,6 +24,7 @@ struct node {
     float shadow_darkness;
     bool hide_svg;
     bool is_inner_shadow;
+    float magic_multiplier;
 
     // grid
     std::vector<uint16_t> row_fractions;

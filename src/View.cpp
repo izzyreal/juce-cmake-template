@@ -72,6 +72,7 @@ static void from_json(const json& j, node& n)
         if (j.contains("hide_svg"))         j.at("hide_svg").get_to(n.hide_svg); else n.hide_svg = false;
         if (j.contains("shadow_darkness"))  j.at("shadow_darkness").get_to(n.shadow_darkness); else n.shadow_darkness = 0.f;
         if (j.contains("is_inner_shadow"))  j.at("is_inner_shadow").get_to(n.is_inner_shadow); else n.is_inner_shadow = false;
+        if (j.contains("magic_multiplier")) j.at("magic_multiplier").get_to(n.magic_multiplier); else n.magic_multiplier = 0.f;
 
         if (j.contains("shadow_size"))
         {
@@ -148,7 +149,7 @@ static void from_json(const json& j, node& n)
 
 View::View(const std::function<float()>& getScaleToUse) : getScale(getScaleToUse)
 {
-    std::ifstream jsonFile("/Users/izmar/projects/VMPC2000XL/vector UI/views/default.json");
+    std::ifstream jsonFile("/Users/izmar/projects/VMPC2000XL/vector UI/views/default_compact.json");
     json data = json::parse(jsonFile);
 
     view_root = data.template get<node>();

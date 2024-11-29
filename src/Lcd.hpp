@@ -18,7 +18,7 @@ class Lcd : public juce::Component {
             juce::Image img(juce::Image::PixelFormat::RGB, 248*2, 60*2, false);
 
             const auto asp_ratio = 60.f/248.f;
-            const auto w = float(getWidth()) * 0.55f;
+            const auto w = float(getWidth()) * magicMultiplier;
             const auto h = w * asp_ratio;
 
             const auto img_scale = w / (248 * 2);
@@ -53,6 +53,8 @@ class Lcd : public juce::Component {
 
             /*if (frame < 50)*/ shadow.render(g, p);
         }
+
+        float magicMultiplier = 0.55f;
 
     private:
         uint8_t frame = 0;

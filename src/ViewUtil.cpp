@@ -155,6 +155,7 @@ void ViewUtil::createComponent(
     else if (n.node_type == "lcd")
     {
         auto lcd = new Lcd();
+        if (n.magic_multiplier > 0.f) lcd->magicMultiplier = n.magic_multiplier;
         n.lcd_component = lcd;
         parent->addAndMakeVisible(lcd);
         components.push_back(lcd);
