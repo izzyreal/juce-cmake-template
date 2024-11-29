@@ -44,4 +44,5 @@ struct node {
     juce::Component *slider_component;
     juce::Component *data_wheel_component;
     juce::Component *lcd_component;
+    juce::Component *led_component;
 };

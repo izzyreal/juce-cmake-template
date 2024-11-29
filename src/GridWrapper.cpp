@@ -92,6 +92,12 @@ static void processChildren(
         {
             component = c.num_key_component;
         }
+        else if (c.node_type == "red_led" || c.node_type == "green_led")
+        {
+            component = c.led_component;
+            const auto drawableBounds = dynamic_cast<SvgComponent*>(c.led_component)->getDrawableBounds();
+            width = drawableBounds.getWidth() * scale;
+        }
         else if (c.label_component != nullptr)
         {
             width = dynamic_cast<LabelComponent*>(c.label_component)->getRequiredWidth();

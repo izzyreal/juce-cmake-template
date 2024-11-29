@@ -15,6 +15,7 @@
 #include "DataWheel.hpp"
 #include "Knob.hpp"
 #include "Lcd.hpp"
+#include "Led.hpp"
 
 #include <fstream>
 
@@ -157,6 +158,14 @@ void ViewUtil::createComponent(
         n.lcd_component = lcd;
         parent->addAndMakeVisible(lcd);
         components.push_back(lcd);
+        return;
+    }
+    else if (n.node_type == "red_led" || n.node_type == "green_led")
+    {
+        auto led = new Led(n.node_type == "red_led" ? Led::LedColor::RED : Led::LedColor::GREEN, getScale);
+        n.led_component = led;
+        parent->addAndMakeVisible(led);
+        components.push_back(led);
         return;
     }
 

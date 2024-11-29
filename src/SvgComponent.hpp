@@ -34,26 +34,32 @@ class SvgComponent : public juce::Component
         SvgComponent(std::string svg_path, juce::Component *commonParentWithShadowToUse, const float shadowSizeToUse, const std::function<float()> &getScaleToUse)
             : commonParentWithShadow(commonParentWithShadowToUse), shadowSize(shadowSizeToUse), getScale(getScaleToUse)
         {
-            loadSvgFile(juce::File("/Users/izmar/projects/VMPC2000XL/vector UI/views/" + svg_path));
+            setSvgPath(svg_path);
 
-            class ParentSizeAndPositionListener : public juce::ComponentListener {
-                public:
-                    SvgComponent *svgComponent = nullptr;
-                    void componentMovedOrResized (Component &component, bool wasMoved, bool wasResized) {
-                        svgComponent->syncShadowSiblingSizeAndPosition();
-                    }
-            };
+            if (commonParentWithShadow != nullptr)
+            {
+                class ParentSizeAndPositionListener : public juce::ComponentListener {
+                    public:
+                        SvgComponent *svgComponent = nullptr;
+                        void componentMovedOrResized (Component &component, bool wasMoved, bool wasResized) {
+                            svgComponent->syncShadowSiblingSizeAndPosition();
+                        }
+                };
 
-            auto listener = new ParentSizeAndPositionListener();
-            listener->svgComponent = this;
-            parentSizeAndPositionListener = listener;
-            commonParentWithShadow->addComponentListener(parentSizeAndPositionListener);
+                auto listener = new ParentSizeAndPositionListener();
+                listener->svgComponent = this;
+                parentSizeAndPositionListener = listener;
+                commonParentWithShadow->addComponentListener(parentSizeAndPositionListener);
+            }
         }
 
         ~SvgComponent() override
         {
-            commonParentWithShadow->removeComponentListener(parentSizeAndPositionListener);
-            delete parentSizeAndPositionListener;
+            if (commonParentWithShadow !=  nullptr)
+            {
+                commonParentWithShadow->removeComponentListener(parentSizeAndPositionListener);
+                delete parentSizeAndPositionListener;
+            }
         }
 
         juce::Rectangle<float> getDrawableBounds()
@@ -89,7 +95,7 @@ class SvgComponent : public juce::Component
         void syncShadowSiblingSizeAndPosition()
         {
             if (shadow == nullptr) return;
-            
+
             auto globalTopLeft = localPointToGlobal(juce::Point<int>(0, 0));
             auto relativeTopLeft = commonParentWithShadow->getLocalPoint(nullptr, globalTopLeft);
             juce::Rectangle<int> boundsInCommonParent(relativeTopLeft.x, relativeTopLeft.y, getWidth(), getHeight()); 
@@ -112,6 +118,12 @@ class SvgComponent : public juce::Component
 
     protected:
         std::unique_ptr<juce::Drawable> svgDrawable;
+
+        void setSvgPath(const std::string newSvgPath)
+        {
+            loadSvgFile(juce::File("/Users/izmar/projects/VMPC2000XL/vector UI/views/" + newSvgPath));
+            repaint();
+        }
 
     private:
         juce::File svgFile;

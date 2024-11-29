@@ -44,7 +44,7 @@ class Lcd : public juce::Component, juce::Timer {
                 for (uint8_t x = 0; x < 248; x++)
                 {
                     const bool on1 = y == 0 || y == 59 || x == 0 || x == 247;
-                    const bool on = on1 || rawPixels[y][x] || (x >= frame && x <= frame + 47 && y >= 5 && y <= 47);
+                    const bool on = on1 || rawPixels[y][x] || (false && x >= frame && x <= frame + 47 && y >= 5 && y <= 47);
                     drawLcdPixel(img, x, y, on);
                     if (!on) p.addRectangle(x*2, y*2, 2, 2);
                 }
