@@ -5,20 +5,8 @@
 #include "Constants.hpp"
 #include "melatonin_blur/melatonin/shadows.h"
 
-class Lcd : public juce::Component, juce::Timer {
+class Lcd : public juce::Component {
     public:
-        Lcd()
-        {
-            startTimer(50);
-        }
-
-        void timerCallback() override
-        {
-            if (getParentComponent()->getParentComponent()->isMouseOver(true)) return;
-            frame = (frame + 1) % 100;
-            repaint();
-        }
-
         void paint(juce::Graphics &g) override
         {
             g.fillAll(Constants::lcdOffBacklit);

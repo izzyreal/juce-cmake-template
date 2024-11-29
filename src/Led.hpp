@@ -2,18 +2,12 @@
 
 #include "SvgComponent.hpp"
 
-class Led : public SvgComponent, juce::Timer {
+class Led : public SvgComponent {
     public:
         enum LedColor { RED, GREEN };
 
-        Led(const LedColor ledColorToUse, const std::function<float()> &getScaleToUse) : SvgComponent("led_on_green.svg", nullptr, 0, getScaleToUse), ledColor(ledColorToUse)
+        Led(const LedColor ledColorToUse, const std::function<float()> &getScaleToUse) : SvgComponent("led_off.svg", nullptr, 0, getScaleToUse), ledColor(ledColorToUse)
         {
-            startTimer(500);
-        }
-
-        void timerCallback() override
-        {
-            setLedOnEnabled(!ledOnEnabled);
         }
 
         void setLedOnEnabled(const bool b)
