@@ -9,7 +9,6 @@
 #include <nlohmann/json.hpp>
 
 #include <fstream>
-
 using json = nlohmann::json;
 
 static void from_json(const json& j, node& n)
@@ -150,14 +149,15 @@ static void from_json(const json& j, node& n)
 #endif
 }
 
-View::View(const std::function<float()>& getScaleToUse) : getScale(getScaleToUse)
+View::View(const std::function<float()> &getScaleToUse, const std::function<juce::Font&()> &getNimbusSansScaledToUse)
+    : getScale(getScaleToUse), getNimbusSansScaled(getNimbusSansScaledToUse)
 {
     std::ifstream jsonFile("/Users/izmar/projects/VMPC2000XL/vector UI/views/" + name + ".json");
     json data = json::parse(jsonFile);
 
     view_root = data.template get<node>();
 
-    ViewUtil::createComponent(view_root, components, this, getScale);
+    ViewUtil::createComponent(view_root, components, this, getScale, getNimbusSansScaled);
 }
 
 View::~View()

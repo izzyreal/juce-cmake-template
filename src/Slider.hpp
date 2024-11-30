@@ -7,10 +7,10 @@
 
 class Slider : public juce::Component {
     public:
-        Slider(juce::Component *commonParentWithShadowToUse, const std::function<float()> &getScaleToUse, const float shadowSize)
+        Slider(juce::Component *commonParentWithShadowToUse, const std::function<float()> &getScaleToUse, const float shadowSize, const std::function<juce::Font&()> &getNimbusSansScaled)
             : getScale(getScaleToUse)
         {
-            rectangleLabel = new RectangleLabel(getScaleToUse, "NOTE\nVARIATION", "VARIATION", Constants::chassisColour, Constants::labelColour, 0.f, 7.f);
+            rectangleLabel = new RectangleLabel(getScaleToUse, "NOTE\nVARIATION", "VARIATION", Constants::chassisColour, Constants::labelColour, 0.f, 7.f, getNimbusSansScaled);
             addAndMakeVisible(rectangleLabel);
 
             sliderCapSvg = new SliderCap(commonParentWithShadowToUse, shadowSize, getScale);

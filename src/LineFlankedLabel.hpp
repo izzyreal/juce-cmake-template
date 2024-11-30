@@ -6,10 +6,11 @@
 
 class LineFlankedLabel : public juce::Component {
     public:
-        LineFlankedLabel(const std::string &textToUse, const std::function<float()> &getScaleToUse)
+        LineFlankedLabel(const std::string &textToUse, const std::function<float()> &getScaleToUse,
+                const std::function<juce::Font&()> &getNimbusSansScaled)
             : text(textToUse), getScale(getScaleToUse)
         {
-            simpleLabel = new SimpleLabel(getScaleToUse, textToUse, Constants::labelColour);
+            simpleLabel = new SimpleLabel(getScaleToUse, textToUse, Constants::labelColour, getNimbusSansScaled);
             addAndMakeVisible(simpleLabel);
         }
 

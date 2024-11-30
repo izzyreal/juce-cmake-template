@@ -9,22 +9,22 @@
 class ViewUtil
 {
     public:
-        static float getLabelHeight(const std::string& text,
-                const std::function<float()>& getScale);
+        static float getLabelHeight(const std::string &text,
+                const std::function<float()> &getScale);
 
         static void createComponents(
                 node &n,
-                std::vector<juce::Component*>& components,
+                std::vector<juce::Component*> &components,
                 juce::Component* parent,
-                const std::function<float()>& getScale);
+                const std::function<float()> &getScale,
+                const std::function<juce::Font&()> &getNimbusSansScaled);
 
         static void createComponent(
                 node &n,
-                std::vector<juce::Component*>& components,
-                juce::Component* parent,
-                const std::function<float()>& getScale);
-
-        static juce::Font& getFont(const float scale);
+                std::vector<juce::Component*> &components,
+                juce::Component *parent,
+                const std::function<float()> &getScale,
+                const std::function<juce::Font&()> &getNimbusSansScaled);
 
         static juce::Point<int> getShadowDimensions(const float shadowSize, const float scale)
         {

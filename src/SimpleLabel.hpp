@@ -5,7 +5,6 @@
 
 #include "LabelComponent.hpp"
 #include "Constants.hpp"
-#include "ViewUtil.hpp"
 
 #include <string>
 #include <functional>
@@ -15,14 +14,16 @@ class SimpleLabel : public LabelComponent {
         SimpleLabel(
                 const std::function<float()>& getScaleToUse,
                 const std::string textToUse,
-                const juce::Colour colourToUse)
-            : text(textToUse), getScale(getScaleToUse), colour(colourToUse)
+                const juce::Colour colourToUse,
+                const std::function<juce::Font&()>& getNimbusSansScaledToUse)
+            : text(textToUse), getScale(getScaleToUse), colour(colourToUse),
+            getNimbusSansScaled(getNimbusSansScaledToUse)
         {}
 
         void paint(juce::Graphics& g) override
         {
             //g.fillAll(juce::Colours::yellowgreen);
-            g.setFont(ViewUtil::getFont(getScale()));
+            g.setFont(getNimbusSansScaled());
 
             int row = 0;
             std::string buf;
@@ -62,7 +63,7 @@ class SimpleLabel : public LabelComponent {
             {
                 if (c == '\n')  
                 {
-                    upper = std::max<int>(ViewUtil::getFont(getScale()).getStringWidth(buf), upper);
+                    upper = std::max<int>(getNimbusSansScaled().getStringWidth(buf), upper);
                     buf.clear();
                     should_check = false;
                     continue;
@@ -74,7 +75,7 @@ class SimpleLabel : public LabelComponent {
 
             if (should_check && !buf.empty())
             {
-                upper = std::max<int>(ViewUtil::getFont(getScale()).getStringWidth(buf), upper);
+                upper = std::max<int>(getNimbusSansScaled().getStringWidth(buf), upper);
             }
 
             return ((float) upper );
@@ -89,7 +90,8 @@ class SimpleLabel : public LabelComponent {
 
     private:
         std::string text;
-        const std::function<float()> getScale;
+        const std::function<float()> &getScale;
         juce::Colour colour;
+        const std::function<juce::Font&()> &getNimbusSansScaled;
 };
 

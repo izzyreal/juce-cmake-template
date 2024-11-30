@@ -9,10 +9,10 @@
 
 class NumKey : public juce::Component {
     public:
-        NumKey(const std::function<float()> &getScaleToUse, const std::string topLabelToUse, const std::string bottomLabelToUse, std::string svgPath, juce::Component *commonParentWithShadow, const float shadowSize)
+        NumKey(const std::function<float()> &getScaleToUse, const std::string topLabelToUse, const std::string bottomLabelToUse, std::string svgPath, juce::Component *commonParentWithShadow, const float shadowSize, const std::function<juce::Font&()> &getNimbusSansScaled)
         {
-            topLabel = new SimpleLabel(getScaleToUse, topLabelToUse, Constants::darkLabelColour);
-            bottomLabel = new RectangleLabel(getScaleToUse, bottomLabelToUse, bottomLabelToUse, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.5f, 2.f);
+            topLabel = new SimpleLabel(getScaleToUse, topLabelToUse, Constants::darkLabelColour, getNimbusSansScaled);
+            bottomLabel = new RectangleLabel(getScaleToUse, bottomLabelToUse, bottomLabelToUse, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.5f, 2.f, getNimbusSansScaled);
             svgComponent = new SvgComponent(svgPath, commonParentWithShadow, shadowSize, getScaleToUse);
 
             addAndMakeVisible(topLabel);

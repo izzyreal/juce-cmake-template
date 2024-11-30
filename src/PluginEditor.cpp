@@ -1,13 +1,24 @@
 #define ENABLE_GUI_INSPECTOR 0
 
 #include "PluginEditor.hpp"
-
-#include "ViewUtil.hpp"
+#include "Constants.hpp"
+#include <fstream>
 
 PluginEditor::PluginEditor(PluginProcessor& p)
         : AudioProcessorEditor(&p), pluginProcessor(p)
 {
-    view = new View([&] { return (float) getHeight() / (float) initial_height; });
+    std::ifstream file{"/Users/izmar/Downloads/nimbus-sans-novus-semibold-rounded-50.otf", std::ios::binary};
+    std::vector<char> fontData(std::istreambuf_iterator<char>(file), {});
+
+    nimbusSans = juce::Font(juce::Typeface::createSystemTypefaceFor(fontData.data(), fontData.size()));
+
+    const auto getScale = [&] { return (float) getHeight() / (float) initial_height; };
+    const auto getNimbusSansScaled = [&, getScale]() -> juce::Font& {
+        nimbusSans.setHeight(Constants::BASE_FONT_SIZE * getScale());
+        return nimbusSans;
+    };
+
+    view = new View(getScale, getNimbusSansScaled);
 
     setSize((int) (initial_width * initial_scale), (int) (initial_height * initial_scale));
     setWantsKeyboardFocus(true);
@@ -24,15 +35,12 @@ PluginEditor::PluginEditor(PluginProcessor& p)
 
 PluginEditor::~PluginEditor()
 {
-    // We assure the custom font is not present in the statically allocated font
-    ViewUtil::getFont(0.f).setTypefaceName("foo");
     delete view;
     delete inspector;
 }
 
 void PluginEditor::resized()
 {
-    printf("Resized to %i, %i\n", getWidth(), getHeight());
     view->setBounds(0, 0, getWidth(), getHeight());
 }
 

@@ -17,8 +17,6 @@
 #include "Lcd.hpp"
 #include "Led.hpp"
 
-#include <fstream>
-
 float ViewUtil::getLabelHeight(const std::string& text, const std::function<float()>& getScale)
 {
     const auto newlineCount = (float) std::count(text.begin(), text.end(), '\n');
@@ -47,9 +45,10 @@ static void addShadow(const node &n, const std::function<float()> &getScale, Svg
 
 void ViewUtil::createComponent(
         node &n,
-        std::vector<juce::Component*>& components,
+        std::vector<juce::Component*> &components,
         juce::Component* parent,
-        const std::function<float()>& getScale)
+        const std::function<float()> &getScale,
+        const std::function<juce::Font&()> &getNimbusSansScaled)
 {
     n.svg_component = nullptr;
     n.svg_with_label_grid_component = nullptr;
@@ -67,7 +66,7 @@ void ViewUtil::createComponent(
     if (n.node_type == "grid")
     {
         auto gridWrapper = new GridWrapper(n, getScale);
-        createComponents(n, gridWrapper->components, gridWrapper, getScale);
+        createComponents(n, gridWrapper->components, gridWrapper, getScale, getNimbusSansScaled);
         components.emplace_back(gridWrapper);
         parent->addAndMakeVisible(components.back());
         n.grid_wrapper_component = components.back();
@@ -76,7 +75,7 @@ void ViewUtil::createComponent(
     else if (n.node_type == "flex_box")
     {
         auto flexBoxWrapper = new FlexBoxWrapper(n, getScale);
-        createComponents(n, flexBoxWrapper->components, flexBoxWrapper, getScale);
+        createComponents(n, flexBoxWrapper->components, flexBoxWrapper, getScale, getNimbusSansScaled);
         components.emplace_back(flexBoxWrapper);
         parent->addAndMakeVisible(components.back());
         n.flex_box_wrapper_component = components.back();
@@ -84,7 +83,7 @@ void ViewUtil::createComponent(
     }
     else if (n.node_type == "line_flanked_label")
     {
-        components.emplace_back(new LineFlankedLabel(n.label, getScale));
+        components.emplace_back(new LineFlankedLabel(n.label, getScale, getNimbusSansScaled));
         parent->addAndMakeVisible(components.back());
         n.line_flanked_label_component = components.back();
         return;
@@ -127,7 +126,7 @@ void ViewUtil::createComponent(
             else bottomLabel += c;
         }
 
-        const auto numKey = new NumKey(getScale, topLabel, bottomLabel, n.svg, parent, n.shadow_size);
+        const auto numKey = new NumKey(getScale, topLabel, bottomLabel, n.svg, parent, n.shadow_size, getNimbusSansScaled);
         addShadow(n, getScale, numKey->getSvgComponent(), parent, components);
         components.push_back(numKey);
         parent->addAndMakeVisible(numKey);
@@ -136,7 +135,7 @@ void ViewUtil::createComponent(
     }
     else if (n.node_type == "slider")
     {
-        auto slider = new Slider(parent, getScale, n.shadow_size);
+        auto slider = new Slider(parent, getScale, n.shadow_size, getNimbusSansScaled);
         n.slider_component = slider;
         addShadow(n, getScale, slider->sliderCapSvg, parent, components);
         parent->addAndMakeVisible(n.slider_component);
@@ -190,11 +189,11 @@ void ViewUtil::createComponent(
 
         if (n.label_style == "function_key")
         {
-            labelComponent = new RectangleLabel(getScale, n.label, n.label, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.5f, 10.f);
+            labelComponent = new RectangleLabel(getScale, n.label, n.label, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.5f, 10.f, getNimbusSansScaled);
         }
         else
         {
-            labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour);
+            labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour, getNimbusSansScaled);
         }
 
         SvgComponent *svgComponent;
@@ -249,27 +248,27 @@ void ViewUtil::createComponent(
 
         if (n.label_style == "chassis_background")
         {
-            labelComponent = new RectangleLabel(getScale, n.label, n.label_text_to_calculate_width, Constants::chassisColour, Constants::darkLabelColour, 0.f, 2.f);
+            labelComponent = new RectangleLabel(getScale, n.label, n.label_text_to_calculate_width, Constants::chassisColour, Constants::darkLabelColour, 0.f, 2.f, getNimbusSansScaled);
         }
         else if (n.label_style == "rounded")
         {
-            labelComponent = new RectangleLabel(getScale, n.label, n.label_text_to_calculate_width, Constants::darkLabelColour, Constants::chassisColour, 1.5f, 6.f);
+            labelComponent = new RectangleLabel(getScale, n.label, n.label_text_to_calculate_width, Constants::darkLabelColour, Constants::chassisColour, 1.5f, 6.f, getNimbusSansScaled);
         }
         else if (n.label_style == "pad_letters")
         {
-            labelComponent = new SimpleLabel(getScale, n.label, Constants::betweenChassisAndLabelColour); 
+            labelComponent = new SimpleLabel(getScale, n.label, Constants::betweenChassisAndLabelColour, getNimbusSansScaled); 
         }
         else if (n.label_style == "cursor_digit")
         {
-            labelComponent = new RectangleLabel(getScale, n.label, n.label, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.5f, 10.f);
+            labelComponent = new RectangleLabel(getScale, n.label, n.label, Constants::greyFacePaintColour, Constants::darkLabelColour, 0.5f, 10.f, getNimbusSansScaled);
         }
         else if (n.label_style == "dark")
         {
-            labelComponent = new SimpleLabel(getScale, n.label, Constants::darkLabelColour); 
+            labelComponent = new SimpleLabel(getScale, n.label, Constants::darkLabelColour, getNimbusSansScaled); 
         }
         else
         {
-            labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour);
+            labelComponent = new SimpleLabel(getScale, n.label, Constants::labelColour, getNimbusSansScaled);
         }
 
         n.label_component = labelComponent;
@@ -281,29 +280,14 @@ void ViewUtil::createComponent(
 
 void ViewUtil::createComponents(
         node &n,
-        std::vector<juce::Component*>& components,
-        juce::Component* parent,
-        const std::function<float()>& getScale)
+        std::vector<juce::Component*> &components,
+        juce::Component *parent,
+        const std::function<float()> &getScale,
+        const std::function<juce::Font&()> &getNimbusSansScaled)
 {
     for (auto& c : n.children)
     {
-        createComponent(c, components, parent, getScale);
+        createComponent(c, components, parent, getScale, getNimbusSansScaled);
     }
-}
-
-juce::Font& ViewUtil::getFont(const float scale)
-{
-    static juce::Font font;
-
-    if (!font.getTypefaceName().contains("Nimbus"))
-    {
-        std::ifstream file{"/Users/izmar/Downloads/nimbus-sans-novus-semibold-rounded-50.otf", std::ios::binary};
-        std::vector<char> fontData(std::istreambuf_iterator<char>(file), {});
-        font = juce::Font(juce::Typeface::createSystemTypefaceFor(fontData.data(), fontData.size()));
-    }
-
-    font.setHeight(Constants::BASE_FONT_SIZE * scale);
-
-    return font;
 }
 
