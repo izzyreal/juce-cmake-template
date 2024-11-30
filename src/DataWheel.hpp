@@ -6,6 +6,7 @@
 
 #include "SvgComponent.hpp"
 #include "DataWheelLines.hpp"
+#include "Lcd.hpp"
 
 class DataWheel : public juce::Component {
     public:
@@ -60,6 +61,13 @@ class DataWheel : public juce::Component {
             lines->setAngle(angle);
 
             repaint();
+
+            if (lcd != nullptr)
+            {
+                int frame = fmod(angle * (100.f / juce::MathConstants<float>::twoPi), 100);
+                lcd->frame = frame;
+                lcd->repaint();
+            }
         }
 
         void mouseUp(const juce::MouseEvent &) override
@@ -100,6 +108,7 @@ class DataWheel : public juce::Component {
         }
 
         SvgComponent *backgroundSvg = nullptr;
+        Lcd *lcd = nullptr;
 
     private:
         SvgComponent *dimpleSvg = nullptr;

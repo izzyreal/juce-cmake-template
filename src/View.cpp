@@ -3,6 +3,8 @@
 #include "GridWrapper.hpp"
 #include "FlexBoxWrapper.hpp"
 #include "ViewUtil.hpp"
+#include "Lcd.hpp"
+#include "DataWheel.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -147,6 +149,23 @@ static void from_json(const json& j, node& n)
     printf("=========================\n");
 }
 
+template <typename T>
+T* findByClass(juce::Component *comp)
+{
+    for (auto &c : comp->getChildren())
+    {
+        if (auto t = dynamic_cast<T*>(c); t != nullptr)
+        {
+            return t;
+        }
+        if (auto t = dynamic_cast<T*>(findByClass<T>(c)); t != nullptr)
+        {
+            return t;
+        }
+    }
+    return nullptr;
+}
+
 View::View(const std::function<float()>& getScaleToUse) : getScale(getScaleToUse)
 {
     std::ifstream jsonFile("/Users/izmar/projects/VMPC2000XL/vector UI/views/default_compact.json");
@@ -155,6 +174,14 @@ View::View(const std::function<float()>& getScaleToUse) : getScale(getScaleToUse
     view_root = data.template get<node>();
 
     ViewUtil::createComponent(view_root, components, this, getScale);
+
+    Lcd *lcd = findByClass<Lcd>(components.front());
+    DataWheel *dataWheel = findByClass<DataWheel>(components.front());
+    
+    if (lcd != nullptr && dataWheel != nullptr)
+    {
+        dataWheel->lcd = lcd;
+    }
 }
 
 View::~View()

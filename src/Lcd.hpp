@@ -56,8 +56,9 @@ class Lcd : public juce::Component {
 
         float magicMultiplier = 0.55f;
 
-    private:
         uint8_t frame = 0;
+
+    private:
 
         void drawLcdPixel(juce::Image &img, const uint8_t lcdX, const uint8_t lcdY, const bool on)
         {
