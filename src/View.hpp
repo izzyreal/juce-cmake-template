@@ -10,11 +10,10 @@ class View : public juce::Component {
         View(const std::function<float()>& getScale);
         ~View() override;
 
-        void paint(juce::Graphics&) override;
         void resized() override;
 
     private:
-        std::string name = "default";
+        std::string name = "default_compact";
         std::vector<juce::Component*> components;
         node view_root;
         const std::function<float()> getScale;

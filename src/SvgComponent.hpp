@@ -4,8 +4,6 @@
 #include <juce_gui_basics/juce_gui_basics.h>
 #include <juce_core/juce_core.h>
 
-#include <cassert>
-
 #include "ViewUtil.hpp"
 
 class SvgComponent : public juce::Component

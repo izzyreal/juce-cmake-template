@@ -18,7 +18,6 @@ struct node {
     std::vector<float> margins;
     std::string justify_items;
     std::string width;
-    float aspect_ratio_height;
     std::string label_text_to_calculate_width;
     float shadow_size;
     float shadow_darkness;

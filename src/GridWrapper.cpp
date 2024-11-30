@@ -10,7 +10,6 @@
 GridWrapper::GridWrapper(struct node &nodeToUse, const std::function<float()> &getScaleToUse)
     : node(nodeToUse), getScale(getScaleToUse)
 {
-    printf("GridWrapper for %s\n", node.name.c_str());
 }
 
 GridWrapper::~GridWrapper()
@@ -125,18 +124,6 @@ static void processChildren(
 
 void GridWrapper::resized()
 {
-    printf("GridWrapper for %s resized to %i, %i\n", node.name.c_str(), getWidth(), getHeight());
-
-    if (node.aspect_ratio_height > 0.f)
-    {
-        printf("Aspect ratio found, adjusting height of %s\n", node.name.c_str());
-
-        if (getHeight() != getWidth() * node.aspect_ratio_height)
-        {
-            setBounds(getX(), getY(), getWidth(), getWidth() * node.aspect_ratio_height);
-        }
-    }
-
     juce::Grid grid;
     grid.justifyItems = juce::Grid::JustifyItems::center;
 

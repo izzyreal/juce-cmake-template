@@ -1,3 +1,5 @@
+#define DEBUG_NODES 0
+
 #include "View.hpp"
 
 #include "GridWrapper.hpp"
@@ -68,7 +70,6 @@ static void from_json(const json& j, node& n)
         if (j.contains("area"))             j.at("area").get_to(n.area);
         if (j.contains("justify_items"))    j.at("justify_items").get_to(n.justify_items);
         if (j.contains("width"))            j.at("width").get_to(n.width);
-        if (j.contains("aspect_ratio_height")) j.at("aspect_ratio_height").get_to(n.aspect_ratio_height); else n.aspect_ratio_height = 0.f;
         if (j.contains("hide_svg"))         j.at("hide_svg").get_to(n.hide_svg); else n.hide_svg = false;
         if (j.contains("shadow_darkness"))  j.at("shadow_darkness").get_to(n.shadow_darkness); else n.shadow_darkness = 0.f;
         if (j.contains("is_inner_shadow"))  j.at("is_inner_shadow").get_to(n.is_inner_shadow); else n.is_inner_shadow = false;
@@ -111,6 +112,7 @@ static void from_json(const json& j, node& n)
         n.area[3] += 1;
     }
 
+#if DEBUG_NODES == 1
     printf("=== Deserialized node ===\n");
     if (!n.name.empty())        printf("-        name: %s\n", n.name.c_str());
     if (!n.svg.empty())         printf("-         svg: %s\n", n.svg.c_str());
@@ -145,11 +147,12 @@ static void from_json(const json& j, node& n)
     }
 
     printf("=========================\n");
+#endif
 }
 
 View::View(const std::function<float()>& getScaleToUse) : getScale(getScaleToUse)
 {
-    std::ifstream jsonFile("/Users/izmar/projects/VMPC2000XL/vector UI/views/default_compact.json");
+    std::ifstream jsonFile("/Users/izmar/projects/VMPC2000XL/vector UI/views/" + name + ".json");
     json data = json::parse(jsonFile);
 
     view_root = data.template get<node>();
@@ -163,11 +166,6 @@ View::~View()
     {
         delete c;
     }
-}
-
-void View::paint(juce::Graphics& g)
-{
-    //g.fillAll(Constants::chassisColour);
 }
 
 void View::resized()
