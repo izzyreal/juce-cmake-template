@@ -6,6 +6,8 @@ class PluginProcessor : public juce::AudioProcessor
 {
 public:
     PluginProcessor();
+    
+    static BusesProperties getBusesProperties();
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
 

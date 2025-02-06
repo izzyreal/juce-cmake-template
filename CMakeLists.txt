@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.13)
 
 include(FetchContent)
 
-project(plugin VERSION 0.0.1)
+project(plugin VERSION 0.1.5)
 
 FetchContent_Declare(JUCE
   GIT_REPOSITORY https://github.com/juce-framework/JUCE.git
-  GIT_TAG        7.0.9
+  GIT_TAG        develop
   SOURCE_DIR     ${CMAKE_SOURCE_DIR}/deps/JUCE
 )
 
@@ -25,7 +25,7 @@ juce_add_plugin(plugin
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     PLUGIN_MANUFACTURER_CODE Izmr
     PLUGIN_CODE PluG
-    FORMATS VST3 Standalone
+    FORMATS VST3 Standalone AU
     PRODUCT_NAME "plugin")
 
 set(_src_root_path "${CMAKE_CURRENT_SOURCE_DIR}/src")
