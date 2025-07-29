@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ 
 include(FetchContent)
 
 project(plugin VERSION 0.0.0)
@@ -25,7 +26,7 @@ juce_add_plugin(plugin
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     PLUGIN_MANUFACTURER_CODE Izmr
     PLUGIN_CODE PluG
-    FORMATS LV2 Standalone
+    FORMATS VST3 Standalone
     PRODUCT_NAME "plugin")
 
 set(_src_root_path "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -51,3 +52,13 @@ target_link_libraries(plugin PRIVATE
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags)
+
+if (PROJECT_IS_TOP_LEVEL)
+    # Create symlink to compile_commands.json for IDE to pick it up
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -E create_symlink
+            ${CMAKE_BINARY_DIR}/compile_commands.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/compile_commands.json
+    )
+endif()
+

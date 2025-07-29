@@ -42,4 +42,11 @@ public:
     void processBlock(juce::AudioSampleBuffer &, juce::MidiBuffer &) override;
 
     bool hasEditor() const override { return true; }
+
+private:
+    float currentFrequency;
+    float phase;
+    float phaseDelta;
+    double sampleRate;
+    bool isNoteOn;
 };
