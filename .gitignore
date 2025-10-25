@@ -30,8 +30,7 @@ build/
 # to vendor lock-in.
 #
 # Note that I personally love to work with CLion,
-# but we live in a big and diverse world. Also,
-# there is no free version of CLion.
+# but we live in a big and diverse world.
 #
 # Also note that one of the main motivations for
 # using CMake in the first place is to keep a
@@ -46,3 +45,6 @@ build/
 
 cmake-build-debug/
 cmake-build-release/
+
+.cache/
+compile_commands.json
