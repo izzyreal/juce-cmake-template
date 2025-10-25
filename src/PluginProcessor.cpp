@@ -2,16 +2,13 @@
 #include "PluginEditor.hpp"
 
 PluginProcessor::PluginProcessor()
-        : AudioProcessor(BusesProperties()
-                                 .withInput("Stereo In", juce::AudioChannelSet::stereo(), true)
-                                 .withOutput("Stereo Out", juce::AudioChannelSet::stereo(), true))
+    : AudioProcessor(BusesProperties()
+                         .withInput("Stereo In", juce::AudioChannelSet::stereo(), true)
+                         .withOutput("Stereo Out", juce::AudioChannelSet::stereo(), true))
 {
 }
 
-const juce::String PluginProcessor::getName() const
-{
-    return JucePlugin_Name;
-}
+const juce::String PluginProcessor::getName() const { return JucePlugin_Name; }
 
 bool PluginProcessor::acceptsMidi() const
 {
@@ -40,45 +37,44 @@ bool PluginProcessor::isMidiEffect() const
 #endif
 }
 
-double PluginProcessor::getTailLengthSeconds() const
+double PluginProcessor::getTailLengthSeconds() const { return 0.0; }
+int PluginProcessor::getNumPrograms() { return 1; }
+int PluginProcessor::getCurrentProgram() { return 0; }
+void PluginProcessor::setCurrentProgram(int) {}
+const juce::String PluginProcessor::getProgramName(int) { return {}; }
+void PluginProcessor::changeProgramName(int, const juce::String&) {}
+
+void PluginProcessor::prepareToPlay(double, int) {}
+void PluginProcessor::releaseResources() {}
+
+bool PluginProcessor::isBusesLayoutSupported(const BusesLayout &) const { return true; }
+
+void PluginProcessor::getStateInformation(juce::MemoryBlock &destData)
 {
-    return 0.0;
+    juce::ignoreUnused(destData);
 }
 
-int PluginProcessor::getNumPrograms()
+void PluginProcessor::setStateInformation(const void *data, int sizeInBytes)
 {
-    return 1;
+    juce::ignoreUnused(data, sizeInBytes);
 }
 
-int PluginProcessor::getCurrentProgram()
+void PluginProcessor::pushMidiMessage(const juce::MidiMessage& msg)
 {
-    return 0;
+    const juce::ScopedLock lock(midiLock);
+    outgoingMidi.addEvent(msg, 0);
 }
 
-void PluginProcessor::setCurrentProgram(int index)
+void PluginProcessor::processBlock(juce::AudioSampleBuffer &buf, juce::MidiBuffer &midiBuf)
 {
-    juce::ignoreUnused(index);
-}
+    buf.clear();
 
-const juce::String PluginProcessor::getProgramName(int index)
-{
-    juce::ignoreUnused(index);
-    return {};
-}
-
-void PluginProcessor::changeProgramName(int index, const juce::String &newName)
-{
-    juce::ignoreUnused(index, newName);
-}
-
-//==============================================================================
-void PluginProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
-{
-    juce::ignoreUnused(samplesPerBlock);
-}
-
-void PluginProcessor::releaseResources()
-{
+    // Append outgoing MIDI messages queued by the editor
+    {
+        const juce::ScopedLock lock(midiLock);
+        midiBuf.addEvents(outgoingMidi, 0, -1, 0);
+        outgoingMidi.clear();
+    }
 }
 
 juce::AudioProcessorEditor* PluginProcessor::createEditor()
@@ -86,28 +82,8 @@ juce::AudioProcessorEditor* PluginProcessor::createEditor()
     return new PluginEditor(*this);
 }
 
-bool PluginProcessor::isBusesLayoutSupported(const juce::AudioProcessor::BusesLayout &layouts) const
-{
-    return true;
-}
-
-void PluginProcessor::getStateInformation(juce::MemoryBlock &destData)
-{
-    juce::ignoreUnused(destData);
-}
-
-void PluginProcessor::setStateInformation(const void* data, int sizeInBytes)
-{
-    juce::ignoreUnused(data, sizeInBytes);
-}
-
-void PluginProcessor::processBlock(juce::AudioSampleBuffer &buf, juce::MidiBuffer &midiBuf)
-{
-    buf.clear();
-    midiBuf.clear();
-}
-
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new PluginProcessor();
 }
+

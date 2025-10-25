@@ -23,11 +23,11 @@ juce_add_plugin(virtual-midi-foot
     IS_SYNTH TRUE
     MICROPHONE_PERMISSION_ENABLED FALSE
     NEEDS_MIDI_INPUT TRUE
-    NEEDS_MIDI_OUTPUT FALSE
+    NEEDS_MIDI_OUTPUT TRUE 
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     PLUGIN_MANUFACTURER_CODE Izmr
     PLUGIN_CODE Vmif 
-    FORMATS LV2 Standalone
+    FORMATS Standalone
     PRODUCT_NAME "virtual-midi-foot")
 
 set(_src_root_path "${CMAKE_CURRENT_SOURCE_DIR}/src")

@@ -1,13 +1,127 @@
 #include "PluginEditor.hpp"
+#include <juce_data_structures/juce_data_structures.h>
 
 PluginEditor::PluginEditor(PluginProcessor& p)
-        : AudioProcessorEditor(&p), pluginProcessor(p)
+    : AudioProcessorEditor(&p), pluginProcessor(p)
 {
-    setSize(320, 200);
+    setResizable(true, true);
+    setResizeLimits(200, 150, 2000, 1500);
     setWantsKeyboardFocus(true);
+
+    configFile = juce::File::getSpecialLocation(juce::File::userDocumentsDirectory)
+                     .getChildFile("VirtualFootswitchConfig.json");
+
+    loadConfig();
+
+    if (footswitches.empty()) {
+        for (int i = 0; i < 40; ++i)
+            footswitches.push_back({ "FS" + juce::String(i + 1), 20 + i, false, {} });
+    }
+
+    setSize(640, 400);
 }
 
-bool PluginEditor::keyPressed(const juce::KeyPress &)
+void PluginEditor::resized()
 {
-    return true;
+    auto area = getLocalBounds().toFloat();
+    int cols = 10, rows = 4;
+    float w = area.getWidth() / cols;
+    float h = area.getHeight() / rows;
+
+    for (int r = 0; r < rows; ++r)
+        for (int c = 0; c < cols; ++c) {
+            int idx = r * cols + c;
+            if (idx < (int)footswitches.size())
+                footswitches[idx].bounds = { c * w + 2, r * h + 2, w - 4, h - 4 };
+        }
 }
+
+void PluginEditor::paint(juce::Graphics &g)
+{
+    g.fillAll(juce::Colours::darkgrey);
+    drawFootswitches(g);
+}
+
+void PluginEditor::drawFootswitches(juce::Graphics &g)
+{
+    for (auto &fs : footswitches) {
+        g.setColour(fs.isPressed ? juce::Colours::orange : juce::Colours::lightgrey);
+        g.fillRoundedRectangle(fs.bounds, 6.0f);
+
+        g.setColour(juce::Colours::black);
+        g.drawRoundedRectangle(fs.bounds, 6.0f, 1.0f);
+
+        g.drawText(fs.label + " (CC " + juce::String(fs.cc) + ")",
+                   fs.bounds, juce::Justification::centred);
+    }
+}
+
+void PluginEditor::mouseDown(const juce::MouseEvent& e)
+{
+    for (auto &fs : footswitches) {
+        if (fs.bounds.contains(e.position)) {
+            fs.isPressed = true;
+            pluginProcessor.pushMidiMessage(
+                juce::MidiMessage::controllerEvent(1, fs.cc, 64));
+            repaint();
+            break;
+        }
+    }
+}
+
+void PluginEditor::mouseUp(const juce::MouseEvent& e)
+{
+    for (auto &fs : footswitches) {
+        if (fs.isPressed && fs.bounds.contains(e.position)) {
+            fs.isPressed = false;
+            pluginProcessor.pushMidiMessage(
+                juce::MidiMessage::controllerEvent(1, fs.cc, 0));
+            repaint();
+            break;
+        }
+    }
+}
+
+bool PluginEditor::keyPressed(const juce::KeyPress &) { return true; }
+
+void PluginEditor::saveConfig()
+{
+    juce::DynamicObject::Ptr root = new juce::DynamicObject();
+    juce::Array<juce::var> arr;
+
+    for (auto &fs : footswitches) {
+        juce::DynamicObject::Ptr obj = new juce::DynamicObject();
+        obj->setProperty("label", fs.label);
+        obj->setProperty("cc", fs.cc);
+        arr.add(juce::var(obj.get()));
+    }
+    root->setProperty("footswitches", arr);
+
+    juce::FileOutputStream out(configFile);
+    if (out.openedOk()) {
+        out.setPosition(0);
+        out.truncate();
+        out.writeText(juce::JSON::toString(juce::var(root.get()), true, true), false, false, "\n");
+    }
+}
+
+void PluginEditor::loadConfig()
+{
+    if (configFile.existsAsFile()) {
+        juce::var data = juce::JSON::parse(configFile);
+        if (auto* root = data.getDynamicObject()) {
+            auto arr = root->getProperty("footswitches");
+            if (arr.isArray()) {
+                footswitches.clear();
+                for (auto &v : *arr.getArray()) {
+                    if (auto* obj = v.getDynamicObject())
+                        footswitches.push_back({
+                            obj->getProperty("label").toString(),
+                            (int)obj->getProperty("cc"), false, {}
+                        });
+                }
+            }
+        }
+    }
+}
+
