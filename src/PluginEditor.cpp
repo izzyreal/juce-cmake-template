@@ -60,6 +60,12 @@ void PluginEditor::mouseDown(const juce::MouseEvent& e)
 {
     for (auto &fs : footswitches) {
         if (fs.bounds.contains(e.position)) {
+
+            if (e.mods.isRightButtonDown()) {
+                editFootswitch(fs);
+                return;
+            }
+
             fs.isPressed = true;
             pluginProcessor.pushMidiMessage(
                 juce::MidiMessage::controllerEvent(1, fs.cc, 64));
@@ -125,3 +131,31 @@ void PluginEditor::loadConfig()
     }
 }
 
+void PluginEditor::editFootswitch(Footswitch& fs)
+{
+    auto* window = new juce::AlertWindow("Edit Footswitch",
+                                         "Modify the label and CC number.",
+                                         juce::AlertWindow::NoIcon);
+
+    window->addTextEditor("label", fs.label, "Label:");
+    window->addTextEditor("cc", juce::String(fs.cc), "MIDI CC:");
+    window->getTextEditor("cc")->setInputRestrictions(3, "0123456789");
+
+    window->addButton("OK", 1);
+    window->addButton("Cancel", 0);
+
+    // Use async to avoid blocking the message thread
+    window->enterModalState(true, juce::ModalCallbackFunction::create(
+        [this, window, &fs](int result)
+        {
+            if (result == 1) // OK pressed
+            {
+                fs.label = window->getTextEditor("label")->getText();
+                fs.cc = window->getTextEditor("cc")->getText().getIntValue();
+                saveConfig();
+                repaint();
+            }
+            delete window;
+        }
+    ));
+}

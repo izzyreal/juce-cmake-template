@@ -30,5 +30,6 @@ private:
     void saveConfig();
     void loadConfig();
     void drawFootswitches(juce::Graphics &g);
+    void editFootswitch(Footswitch& fs);
 };
 
