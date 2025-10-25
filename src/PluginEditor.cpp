@@ -126,9 +126,43 @@ void PluginEditor::loadConfig()
                             (int)obj->getProperty("cc"), false, {}
                         });
                 }
+                return;
             }
         }
     }
+
+    footswitches.clear();
+
+    const juce::StringArray defaultLabels = {
+        "PLAY STRT",
+        "PLAY",
+        "STOP",
+        "REC+PLAY",
+        "ODUB+PLAY",
+        "REC/PUNCH",
+        "ODUB/PNCH",
+        "TAP",
+        "PAD BNK A",
+        "PAD BNK B",
+        "PAD BNK C",
+        "PAD BNK D",
+        "PAD 1", "PAD 2", "PAD 3", "PAD 4",
+        "PAD 5", "PAD 6", "PAD 7", "PAD 8",
+        "PAD 9", "PAD 10", "PAD 11", "PAD 12",
+        "PAD 13", "PAD 14", "PAD 15", "PAD 16",
+        "F1", "F2", "F3", "F4", "F5", "F6"
+    };
+
+    for (int i = 0; i < defaultLabels.size(); ++i)
+    {
+        Footswitch fs;
+        fs.label = defaultLabels[i];
+        fs.cc = i; // ascending CC from 0 upwards
+        fs.isPressed = false;
+        footswitches.push_back(fs);
+    }
+
+    saveConfig(); // persist the default config
 }
 
 void PluginEditor::editFootswitch(Footswitch& fs)
