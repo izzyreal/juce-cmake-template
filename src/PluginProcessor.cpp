@@ -1,11 +1,14 @@
 #include "PluginProcessor.hpp"
 #include "PluginEditor.hpp"
 
+#include <rtsan_standalone/rtsan_standalone.h>
+
 PluginProcessor::PluginProcessor()
         : AudioProcessor(BusesProperties()
                                  .withInput("Stereo In", juce::AudioChannelSet::stereo(), true)
                                  .withOutput("Stereo Out", juce::AudioChannelSet::stereo(), true))
 {
+    __rtsan::Initialize();
 }
 
 const juce::String PluginProcessor::getName() const
@@ -103,6 +106,8 @@ void PluginProcessor::setStateInformation(const void* data, int sizeInBytes)
 
 void PluginProcessor::processBlock(juce::AudioSampleBuffer &buf, juce::MidiBuffer &midiBuf)
 {
+    __rtsan::ScopedSanitizeRealtime ssr;
+    std::vector{1};
     buf.clear();
     midiBuf.clear();
 }

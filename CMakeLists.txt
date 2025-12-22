@@ -10,10 +10,15 @@ FetchContent_Declare(JUCE
   SOURCE_DIR     ${CMAKE_SOURCE_DIR}/deps/JUCE
 )
 
+FetchContent_Declare(rtsan
+    GIT_REPOSITORY https://github.com/izzyreal/rtsan-libs-cmake.git
+    GIT_TAG main
+)
+
 set (JUCE_COPY_PLUGIN_AFTER_BUILD ON)
 set (JUCE_ENABLE_MODULE_SOURCE_GROUPS ON)
 
-FetchContent_MakeAvailable(JUCE)
+FetchContent_MakeAvailable(JUCE rtsan)
 
 juce_add_plugin(plugin
     BUNDLE_ID org.example.plugin
@@ -25,7 +30,7 @@ juce_add_plugin(plugin
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     PLUGIN_MANUFACTURER_CODE Izmr
     PLUGIN_CODE PluG
-    FORMATS LV2 Standalone
+    FORMATS VST3 Standalone
     PRODUCT_NAME "plugin")
 
 set(_src_root_path "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -51,3 +56,5 @@ target_link_libraries(plugin PRIVATE
     juce::juce_recommended_config_flags
     juce::juce_recommended_lto_flags
     juce::juce_recommended_warning_flags)
+
+rtsan_libs_enable(TARGET plugin)
