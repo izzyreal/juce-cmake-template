@@ -27,7 +27,7 @@ juce_add_plugin(virtual-midi-foot
     EDITOR_WANTS_KEYBOARD_FOCUS TRUE
     PLUGIN_MANUFACTURER_CODE Izmr
     PLUGIN_CODE Vmif 
-    FORMATS Standalone
+    FORMATS Standalone VST3
     PRODUCT_NAME "virtual-midi-foot")
 
 set(_src_root_path "${CMAKE_CURRENT_SOURCE_DIR}/src")
